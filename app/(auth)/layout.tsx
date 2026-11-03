@@ -1,12 +1,11 @@
+import Image from "next/image";
 import { CenaDespensa } from "./cena-despensa";
 
-// Marca do CAPE, a instituição que recebe o sistema.
+// Marca do CAPE (símbolo oficial; o nome vem em texto ao lado, por isso o alt vazio).
 function MarcaCape() {
   return (
     <div className="flex items-center gap-3">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary font-heading text-sm font-semibold tracking-wide text-primary-foreground">
-        CAPE
-      </span>
+      <Image src="/simbolo-cape.png" alt="" width={64} height={64} priority className="size-12 shrink-0 lg:size-16" />
       <span className="leading-tight">
         <span className="block font-heading text-base font-semibold text-primary">Despensa CAPE</span>
         <span className="block text-sm text-muted-foreground">Centro de Apoio Pedagógico Especializado</span>
@@ -20,7 +19,7 @@ function MarcaCape() {
 // No celular, só a marca e o formulário.
 export default function LayoutAcesso({ children }: LayoutProps<"/">) {
   return (
-    <main className="grid min-h-dvh flex-1 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+    <main className="grid min-h-dvh flex-1 grid-rows-[auto_1fr] lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:grid-rows-1">
       <section
         aria-label="Apresentação do sistema"
         className="relative flex flex-col border-b px-4 py-5 sm:px-8 lg:my-10 lg:border-r lg:border-b-0 lg:px-12 lg:py-2"

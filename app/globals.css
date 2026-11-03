@@ -160,3 +160,9 @@ a:focus-visible {
   background-color: var(--tomate);
   color: #ffffff;
 }
+
+/* O Edge desenha o próprio botão de mostrar senha; o CampoSenha já tem o seu. */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
