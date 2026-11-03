@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils";
 // A cena 3D (three.js) só carrega no navegador, sob demanda, para não atrasar o formulário.
 const Despensa3D = dynamic(() => import("./despensa-3d"), {
   ssr: false,
-  loading: () => <div className="size-full animate-pulse rounded-2xl bg-white/5" />,
+  loading: () => <div className="size-full animate-pulse rounded-2xl bg-muted" />,
 });
 
 const LEGENDAS = ["Chegou mercadoria", "Sai o que vence antes", "Aviso de validade", "Hora de comprar"] as const;
 const SELOS = [
-  { texto: "Leite · lote novo guardado", classe: "bg-white text-primary" },
-  { texto: "Feijão · vence antes, sai primeiro", classe: "bg-white text-primary" },
+  { texto: "Leite · lote novo guardado", classe: "bg-ok-fundo text-primary" },
+  { texto: "Feijão · vence antes, sai primeiro", classe: "bg-ok-fundo text-primary" },
   { texto: "Leite · vence em 3 dias", classe: "bg-alerta-fundo text-alerta-texto" },
   { texto: "Arroz · comprar 6 kg", classe: "bg-perigo-fundo text-destructive" },
 ] as const;
@@ -55,16 +55,16 @@ export function CenaDespensa() {
           type="button"
           onClick={() => setPausado(!pausado)}
           aria-label={pausado ? "Continuar animação" : "Pausar animação"}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full border border-white/25 hover:bg-white/10"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full border text-primary hover:bg-accent"
         >
           {pausado ? <PlayIcon className="size-4" aria-hidden="true" /> : <PauseIcon className="size-4" aria-hidden="true" />}
         </button>
         <div className="flex flex-1 gap-1.5" aria-hidden="true">
           {LEGENDAS.map((legenda, i) => (
-            <span key={legenda} className={cn("h-1 flex-1 rounded-full transition-colors duration-500", i === etapa ? "bg-white" : "bg-white/25")} />
+            <span key={legenda} className={cn("h-1 flex-1 rounded-full transition-colors duration-500", i === etapa ? "bg-primary" : "bg-primary/20")} />
           ))}
         </div>
-        <p className="w-44 shrink-0 text-right text-sm" aria-live={pausado ? "polite" : "off"}>
+        <p className="w-44 shrink-0 text-right text-sm text-muted-foreground" aria-live={pausado ? "polite" : "off"}>
           {LEGENDAS[etapa]}
         </p>
       </div>

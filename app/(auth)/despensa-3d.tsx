@@ -193,7 +193,7 @@ function Cena({ pausado, aoMudarEtapa }: { pausado: boolean; aoMudarEtapa: (etap
 
   return (
     <>
-      <hemisphereLight args={["#FFF7E8", "#2F6B4F", 0.9]} />
+      <hemisphereLight args={["#FFFFFF", "#D8CFBF", 1.1]} />
       <directionalLight position={[3, 5, 4]} intensity={1.6} castShadow shadow-mapSize={[1024, 1024]} />
       <Armario />
       {FIXOS.map((f, i) => (
