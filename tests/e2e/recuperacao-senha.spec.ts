@@ -12,6 +12,7 @@ const cabecalhos = { apikey: CHAVE_SERVICO, Authorization: `Bearer ${CHAVE_SERVI
 
 test("recuperação de senha por e-mail até a nova senha", async ({ page, request }) => {
   test.skip(test.info().project.name !== "desktop-1280", "fluxo de e-mail roda só em uma largura");
+  test.slow(); // e-mail + link + troca de senha + novo login
   const email = `recupera.${Date.now()}@colegio.local`;
   const criado = await request.post(`${SUPABASE}/auth/v1/admin/users`, {
     headers: cabecalhos,
@@ -23,6 +24,7 @@ test("recuperação de senha por e-mail até a nova senha", async ({ page, reque
   try {
     await request.delete(`${MAILPIT}/api/v1/messages`);
     await page.goto("/recuperar-senha");
+    await page.waitForLoadState("networkidle");
     await page.getByLabel("E-mail").fill(email);
     await page.getByRole("button", { name: "Enviar link" }).click();
     await expect(page.getByRole("status")).toContainText("Se este e-mail tiver uma conta");

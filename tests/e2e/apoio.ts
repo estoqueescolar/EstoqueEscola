@@ -5,6 +5,8 @@ export const SENHA_DEMO = "Senha@Local123";
 
 export async function entrar(page: Page, email: string, senha = SENHA_DEMO) {
   await page.goto("/login");
+  // no desktop a tela de acesso também carrega a cena 3D: espera a hidratação antes de enviar
+  await page.waitForLoadState("networkidle");
   await page.getByLabel("E-mail").fill(email);
   await page.getByLabel(/^Senha/).fill(senha);
   await page.getByRole("button", { name: "Entrar" }).click();

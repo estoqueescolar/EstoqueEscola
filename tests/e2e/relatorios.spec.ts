@@ -21,7 +21,7 @@ test("consulta baixa os relatórios em PDF e Excel", async ({ page }) => {
   }
 });
 
-test("rota de relatórios recusa pedido sem sessão e período inválido", async ({ page, request }) => {
+test("rota de relatórios recusa pedido sem sessão e período inválido com aviso na tela", async ({ page, request }) => {
   // sem sessão, o proxy manda para o login antes de chegar à rota
   const semSessao = await request.get("/api/relatorios/consumo?formato=pdf&inicio=2026-11-01&fim=2026-11-30", { maxRedirects: 0 });
   expect(semSessao.status()).toBe(307);
@@ -29,8 +29,12 @@ test("rota de relatórios recusa pedido sem sessão e período inválido", async
 
   await entrar(page, "consulta@colegio.local");
   await expect(page).toHaveURL(/\/painel/);
-  const invertido = await page.request.get("/api/relatorios/consumo?formato=pdf&inicio=2026-11-30&fim=2026-11-01");
-  expect(invertido.status()).toBe(400);
-  const tipoErrado = await page.request.get("/api/relatorios/senhas?formato=pdf&inicio=2026-11-01&fim=2026-11-30");
-  expect(tipoErrado.status()).toBe(400);
+  const tipoErrado = await page.request.get("/api/relatorios/senhas?formato=pdf&inicio=2026-11-01&fim=2026-11-30", { maxRedirects: 0 });
+  expect(tipoErrado.status()).toBe(303);
+  expect(tipoErrado.headers().location).toContain("/relatorios?erro=pedido");
+
+  // período invertido: volta para a tela com aviso em português, nada de JSON cru
+  await page.goto("/api/relatorios/consumo?formato=pdf&inicio=2026-11-30&fim=2026-11-01");
+  await expect(page).toHaveURL(/\/relatorios\?erro=pedido/);
+  await expect(page.getByText(/deve ser igual ou anterior/)).toBeVisible();
 });

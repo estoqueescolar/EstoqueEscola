@@ -22,20 +22,20 @@ contar prateleira por prateleira:
 | 3 | Produtos e lotes (entrada com validade) | ✅ pronta |
 | 4 | Movimentações: saída FEFO, perda e ajuste | ✅ pronta |
 | 5 | Painel com alertas, lista de compras e configurações | ✅ pronta |
-| 6 | Cardápio planejado e contagem de restrições alimentares | 🔒 em desenvolvimento |
-| 7 | Relatórios em PDF e XLSX | 🔒 a fazer |
-| 8 | Consolidação dos testes | a fazer |
-| 9 | Documentação final e publicação (Vercel + Supabase) | a fazer |
+| 6 | Cardápio planejado e contagem de restrições alimentares | ✅ pronta |
+| 7 | Relatórios em PDF e XLSX | ✅ pronta |
+| 8 | Consolidação dos testes ([docs/testes.md](docs/testes.md)) | ✅ pronta |
+| 9 | Documentação final e publicação (Vercel + Supabase) | ✅ pronta |
 
-No sistema, as funções das etapas 6 e 7 aparecem no menu com um **cadeado vermelho** e o selo "Em breve".
+Publicado em https://despensa-cape.vercel.app. Documentação: [manual de uso](docs/manual-de-uso.md), [manual de instalação](docs/manual-de-instalacao.md), [diagramas](docs/diagramas/README.md), [testes](docs/testes.md), [regras de negócio](docs/regras-de-negocio.md), [como foi feito com o Claude Code](docs/claude-code.md).
 
 ## Quem usa
 
 | Perfil | Quem é | O que pode |
 |---|---|---|
 | `administrador` | Diretora | Tudo, inclusive usuários e o prazo do alerta de validade |
-| `operador` | Funcionárias da cozinha | Produtos, lotes, entradas, saídas, perdas e ajustes (pelo celular ou tablet) |
-| `consulta` | Quem só acompanha | Ver estoque, alertas e lista de compras |
+| `operador` | Funcionárias da cozinha | Produtos, lotes, entradas, saídas, perdas, ajustes, cardápio e restrições (pelo celular ou tablet) |
+| `consulta` | Quem só acompanha | Ver estoque, alertas, cardápio e baixar relatórios |
 
 As permissões valem em três camadas: **banco** (RLS do Postgres), **servidor** (cada ação confere o perfil)
 e **interface**, que só esconde o que a pessoa não pode usar.
@@ -63,7 +63,7 @@ Detalhes em [docs/regras-de-negocio.md](docs/regras-de-negocio.md).
 | three.js + React Three Fiber + drei | Demonstração 3D da despensa na tela de login |
 | Vitest | Testes das regras de negócio e das permissões (RLS) |
 | Playwright + axe | Testes no navegador e de acessibilidade em 375, 768 e 1280 px |
-| jsPDF + ExcelJS | Relatórios (etapa 7) |
+| jsPDF + ExcelJS | Relatórios em PDF e Excel |
 
 Tudo em planos gratuitos (Vercel e Supabase).
 
@@ -117,7 +117,7 @@ npm run typecheck && npm run lint
 
 ```
 app/(auth)/        login, criar conta, esqueci a senha, nova senha
-app/(app)/         painel, produtos, lotes, movimentações, compras, cadastros, usuários, configurações
+app/(app)/         painel, produtos, lotes, movimentações, compras, cardápio, restrições, relatórios, cadastros, usuários, configurações
 components/comum/  componentes acessíveis (botões, campos, menu)
 components/estoque/ etiquetas de validade, indicador de estoque, histórico
 lib/regras/        regras de negócio puras (FEFO, validade, estoque, compras) — testadas
@@ -159,5 +159,8 @@ Decisões não descritas no enunciado; em todas escolhemos a opção mais simple
 | Lista de compras com botão **Copiar lista** (texto simples) | A compra costuma ser pedida por WhatsApp; o PDF/XLSX entra na etapa de relatórios. |
 | Produtos inativos ficam fora da lista de compras | Produto desativado não é mais comprado. |
 | Demonstração 3D no login carregada sob demanda e só em telas grandes | Mostra o funcionamento da despensa sem atrasar o formulário nem gastar dados no celular; pausa automática para quem pede menos movimento. |
-| Funções ainda não prontas aparecem no menu com cadeado | Mostra o escopo completo sem levar a telas vazias. |
+| Funções ainda não prontas aparecem no menu com cadeado (usado até a etapa 7) | Mostra o escopo completo sem levar a telas vazias. |
+| Contagem de restrição zerada é gravada como 0, não apagada | No banco só a direção apaga; assim a cozinha também corrige uma contagem. |
+| Relatórios por formulário GET simples, com erro voltando para a tela | Funciona sem JavaScript e baixa direto; período limitado a 1 ano e a 1000 movimentações por arquivo. |
+| Cardápio de segunda a sexta | Dias letivos; sábado e domingo abrem a semana seguinte. |
 | E-mails de produção pelo Gmail (escolarestoque@gmail.com) com senha de app | Gratuito; a senha de app fica só no painel do Supabase. |

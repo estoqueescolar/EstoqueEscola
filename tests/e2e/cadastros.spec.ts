@@ -47,7 +47,7 @@ test.describe("cadastros auxiliares", () => {
     await page.goto("/cadastros/categorias");
     await page.getByRole("button", { name: "Excluir Laticínios" }).click();
     await page.getByRole("alertdialog").getByRole("button", { name: "Excluir" }).click();
-    await expect(page.getByText("há produtos ou lotes usando este cadastro")).toBeVisible();
+    await expect(page.getByText("há produtos, lotes ou contagens usando este cadastro")).toBeVisible();
     await expect(page.getByRole("listitem").filter({ hasText: "Laticínios" })).toBeVisible();
   });
 });

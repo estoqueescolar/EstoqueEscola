@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { obterConfiguracoes } from "@/lib/dados/configuracoes";
 import { obterUsuarioAtual } from "@/lib/permissoes";
-import { carregarConteudo } from "@/lib/relatorios/dados";
+import { carregarConteudo, ErroPeriodoGrande } from "@/lib/relatorios/dados";
 import { nomeArquivo, type MetadadosRelatorio } from "@/lib/relatorios/metadados";
 import { gerarPdf } from "@/lib/relatorios/pdf";
 import { gerarXlsx } from "@/lib/relatorios/xlsx";
@@ -12,10 +12,16 @@ const TIPOS_CONTEUDO = {
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 } as const;
 
+export const maxDuration = 30;
+
+// Erros voltam para a tela de relatórios com aviso em português (o formulário é um GET simples).
+const voltarComErro = (requisicao: NextRequest, codigo: string) =>
+  NextResponse.redirect(new URL(`/relatorios?erro=${codigo}`, requisicao.url), 303);
+
 // Qualquer perfil logado pode gerar (consulta inclusive); os dados passam pelo RLS da sessão.
 export async function GET(requisicao: NextRequest, { params }: RouteContext<"/api/relatorios/[tipo]">) {
   const usuario = await obterUsuarioAtual();
-  if (!usuario) return NextResponse.json({ mensagem: "Entre novamente para gerar relatórios." }, { status: 401 });
+  if (!usuario) return NextResponse.redirect(new URL("/login", requisicao.url), 303);
 
   const busca = requisicao.nextUrl.searchParams;
   const pedido = esquemaPedidoRelatorio.safeParse({
@@ -24,7 +30,7 @@ export async function GET(requisicao: NextRequest, { params }: RouteContext<"/ap
     inicio: busca.get("inicio"),
     fim: busca.get("fim"),
   });
-  if (!pedido.success) return NextResponse.json({ mensagem: pedido.error.issues[0]?.message ?? "Pedido inválido." }, { status: 400 });
+  if (!pedido.success) return voltarComErro(requisicao, "pedido");
   const { tipo, formato, inicio, fim } = pedido.data;
 
   try {
@@ -38,7 +44,7 @@ export async function GET(requisicao: NextRequest, { params }: RouteContext<"/ap
         "Cache-Control": "no-store",
       },
     });
-  } catch {
-    return NextResponse.json({ mensagem: "Não foi possível gerar o relatório. Tente de novo." }, { status: 500 });
+  } catch (erro) {
+    return voltarComErro(requisicao, erro instanceof ErroPeriodoGrande ? "periodo-grande" : "falha");
   }
 }
