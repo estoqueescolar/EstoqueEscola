@@ -20,7 +20,7 @@ export const ITENS_MENU: readonly ItemMenu[] = [
   { href: "/compras", texto: "Lista de compras", icone: "compras" },
   { href: "/cardapio", texto: "Cardápio", icone: "cardapio" },
   { href: "/restricoes", texto: "Restrições", icone: "restricoes" },
-  { href: "/relatorios", texto: "Relatórios", icone: "relatorios", bloqueado: true },
+  { href: "/relatorios", texto: "Relatórios", icone: "relatorios" },
   { href: "/cadastros", texto: "Cadastros", icone: "cadastros" },
   { href: "/usuarios", texto: "Usuários", icone: "usuarios", perfis: ["administrador"] },
   { href: "/configuracoes", texto: "Configurações", icone: "configuracoes", perfis: ["administrador"] },
