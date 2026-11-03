@@ -23,7 +23,7 @@ export async function salvarCadastro(tipo: unknown, id: unknown, dados: unknown)
     }
 
     const supabase = await criarClienteServidor();
-    // As quatro tabelas têm formatos diferentes; o Zod acima já garantiu o formato certo para cada uma.
+    // As tabelas têm formatos diferentes; o Zod acima já garantiu o formato certo para cada uma.
     const tabela = supabase.from(TABELAS_CADASTRO[tipoValido] as "categorias");
     const valores = validacao.data as never;
     const { error } = idValido ? await tabela.update(valores).eq("id", idValido) : await tabela.insert(valores);
@@ -51,7 +51,7 @@ export async function excluirCadastro(tipo: unknown, id: unknown): Promise<Resul
       .eq("id", idValido)
       .select("id");
     if (error?.code === "23503") {
-      return { ok: false, mensagem: "Não dá para excluir: há produtos ou lotes usando este cadastro. Altere-os antes." };
+      return { ok: false, mensagem: "Não dá para excluir: há produtos, lotes ou contagens usando este cadastro. Altere-os antes." };
     }
     if (error) return falha(error);
     if (!data?.length) return { ok: false, mensagem: "Este item não existe mais ou você não pode excluí-lo. Atualize a página; se continuar, fale com a diretora." };

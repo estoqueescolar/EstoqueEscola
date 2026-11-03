@@ -71,4 +71,17 @@ export const CONFIG_CADASTROS: Record<TipoCadastro, ConfigCadastro> = {
     principal: "nome",
     secundarias: ["sigla"],
   },
+  restricoes: {
+    titulo: "Tipos de restrição alimentar",
+    descricao: "Restrições contadas por dia, como intolerância à lactose, doença celíaca e alergias.",
+    singular: "restrição",
+    artigo: "a",
+    campos: [
+      { nome: "nome", rotulo: "Nome", tipo: "texto", obrigatorio: true, ajuda: "Exemplo: Intolerância à lactose" },
+      { nome: "descricao", rotulo: "Descrição", tipo: "textoLongo", ajuda: "O que evitar no preparo" },
+    ],
+    ordenarPor: "nome",
+    principal: "nome",
+    secundarias: ["descricao"],
+  },
 };
