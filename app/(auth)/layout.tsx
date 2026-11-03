@@ -22,13 +22,13 @@ export default function LayoutAcesso({ children }: LayoutProps<"/">) {
   return (
     <main className="grid min-h-dvh flex-1 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
       <section
-        aria-labelledby="titulo-apresentacao"
+        aria-label="Apresentação do sistema"
         className="relative flex flex-col border-b px-4 py-5 sm:px-8 lg:my-10 lg:border-r lg:border-b-0 lg:px-12 lg:py-2"
       >
         <MarcaCape />
-        <h2 id="titulo-apresentacao" className="mt-4 text-lg font-semibold tracking-tight text-primary lg:mt-8 lg:max-w-md lg:text-4xl lg:leading-tight">
+        <p className="mt-4 text-lg font-semibold tracking-tight text-primary lg:mt-8 lg:max-w-md lg:text-4xl lg:leading-tight">
           Cada alimento no seu tempo.
-        </h2>
+        </p>
         <div className="hidden min-h-0 flex-1 pt-4 lg:flex lg:flex-col">
           <CenaDespensa />
         </div>

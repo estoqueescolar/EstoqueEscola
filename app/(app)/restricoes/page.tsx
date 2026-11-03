@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon, ShieldCheckIcon } from "lucide-react";
+import { AvisoFormulario } from "@/components/comum/AvisoFormulario";
 import { CabecalhoPagina } from "@/components/comum/CabecalhoPagina";
 import { obterUsuarioAtual, pode } from "@/lib/permissoes";
 import { ehDataValida, nomeDoDia, somarDias } from "@/lib/regras/cardapio";
@@ -11,7 +12,7 @@ import { FormularioContagens } from "./formulario";
 export const metadata: Metadata = { title: "Restrições alimentares · Despensa CAPE" };
 
 const DIAS_HISTORICO = 14;
-const linkNavegacao = "inline-flex min-h-11 items-center gap-1 rounded-lg border bg-card px-3 text-sm font-medium hover:border-primary";
+const linkNavegacao = "inline-flex min-h-11 items-center gap-1 rounded-lg border border-input bg-card px-3 text-sm font-medium hover:border-primary";
 
 export default async function PaginaRestricoes({ searchParams }: PageProps<"/restricoes">) {
   const { data: dataParam } = await searchParams;
@@ -19,23 +20,33 @@ export default async function PaginaRestricoes({ searchParams }: PageProps<"/res
   const data = ehDataValida(dataParam) ? dataParam : hoje;
 
   const supabase = await criarClienteServidor();
-  const [usuario, { data: tipos }, { data: contagens }] = await Promise.all([
+  const [usuario, tipos, contagensDoDia, contagens] = await Promise.all([
     obterUsuarioAtual(),
     supabase.from("tipos_restricao").select("id, nome, descricao").order("nome"),
+    // o dia escolhido é lido à parte: fora da janela do histórico o formulário viria zerado
+    supabase.from("contagem_restricoes").select("tipo_restricao_id, quantidade_alunos").eq("data", data),
     supabase
       .from("contagem_restricoes")
-      .select("data, tipo_restricao_id, quantidade_alunos")
+      .select("data, quantidade_alunos")
       .gte("data", somarDias(hoje, -DIAS_HISTORICO))
-      .lte("data", data > hoje ? data : hoje),
+      .lte("data", hoje),
   ]);
-  const listaTipos = tipos ?? [];
-  const doDia = (contagens ?? []).filter((c) => c.data === data);
+  if (tipos.error || contagensDoDia.error || contagens.error) {
+    return (
+      <div className="flex flex-col gap-6">
+        <CabecalhoPagina titulo="Restrições alimentares" />
+        <AvisoFormulario tipo="erro">Não foi possível carregar as restrições. Confira a internet e recarregue a página.</AvisoFormulario>
+      </div>
+    );
+  }
+  const listaTipos = tipos.data;
+  const doDia = contagensDoDia.data;
   const valores = Object.fromEntries(doDia.map((c) => [c.tipo_restricao_id, c.quantidade_alunos]));
   const podeEditar = pode(usuario?.perfil, "cadastrar");
 
   // histórico: total por dia, do mais recente para o mais antigo
   const totaisPorDia = new Map<string, number>();
-  for (const c of contagens ?? []) totaisPorDia.set(c.data, (totaisPorDia.get(c.data) ?? 0) + c.quantidade_alunos);
+  for (const c of contagens.data) totaisPorDia.set(c.data, (totaisPorDia.get(c.data) ?? 0) + c.quantidade_alunos);
   const historico = [...totaisPorDia.entries()].filter(([, t]) => t > 0).sort(([a], [b]) => b.localeCompare(a));
 
   return (
@@ -72,9 +83,13 @@ export default async function PaginaRestricoes({ searchParams }: PageProps<"/res
         {listaTipos.length === 0 ? (
           <p className="rounded-xl border border-dashed bg-card p-6 text-center text-muted-foreground">
             Nenhum tipo de restrição cadastrado.{" "}
-            <Link href="/cadastros/restricoes" className="font-medium text-primary underline underline-offset-4">
-              Cadastrar tipos
-            </Link>
+            {podeEditar ? (
+              <Link href="/cadastros/restricoes" className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-4">
+                Cadastrar tipos
+              </Link>
+            ) : (
+              "Peça à direção para cadastrar."
+            )}
           </p>
         ) : podeEditar ? (
           <FormularioContagens key={data} data={data} tipos={listaTipos} valores={valores} />

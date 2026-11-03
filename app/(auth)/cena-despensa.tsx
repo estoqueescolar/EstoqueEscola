@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 // A cena 3D (three.js) só carrega no navegador, sob demanda, para não atrasar o formulário.
 const Despensa3D = dynamic(() => import("./despensa-3d"), {
   ssr: false,
-  loading: () => <div className="size-full animate-pulse rounded-2xl bg-muted" />,
+  loading: () => <div className="size-full animate-pulse rounded-2xl bg-muted motion-reduce:animate-none" />,
 });
 
 const LEGENDAS = ["Chegou mercadoria", "Sai o que vence antes", "Aviso de validade", "Hora de comprar"] as const;
@@ -42,7 +42,7 @@ export function CenaDespensa() {
           key={etapa}
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute top-4 right-0 inline-flex animate-in items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium shadow-lg duration-500 fade-in slide-in-from-bottom-2",
+            "pointer-events-none absolute top-4 right-0 inline-flex animate-in items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium shadow-lg duration-500 fade-in slide-in-from-bottom-2 motion-reduce:animate-none",
             SELOS[etapa].classe,
           )}
         >
@@ -61,7 +61,7 @@ export function CenaDespensa() {
         </button>
         <div className="flex flex-1 gap-1.5" aria-hidden="true">
           {LEGENDAS.map((legenda, i) => (
-            <span key={legenda} className={cn("h-1 flex-1 rounded-full transition-colors duration-500", i === etapa ? "bg-primary" : "bg-primary/20")} />
+            <span key={legenda} className={cn("h-1 flex-1 rounded-full transition-colors duration-500 motion-reduce:transition-none", i === etapa ? "bg-primary" : "bg-primary/20")} />
           ))}
         </div>
         <p className="w-44 shrink-0 text-right text-sm text-muted-foreground" aria-live={pausado ? "polite" : "off"}>

@@ -2,7 +2,11 @@ import { z } from "zod";
 import { ehDataValida, type TipoRefeicao } from "@/lib/regras/cardapio";
 import { textoOpcional } from "./comum";
 
-export const esquemaData = z.string().refine(ehDataValida, "Data inválida.");
+// Data real entre 2020 e 2100 (evita anos absurdos digitados ou forjados na URL).
+export const esquemaData = z
+  .string()
+  .refine(ehDataValida, "Data inválida.")
+  .refine((d) => d >= "2020-01-01" && d <= "2100-12-31", "Use uma data entre 2020 e 2100.");
 
 // Um dia do cardápio: as 4 refeições (mesmos tipos de REFEICOES); refeição em branco é apagada.
 export const esquemaDiaCardapio = z.object({

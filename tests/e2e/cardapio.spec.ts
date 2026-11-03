@@ -20,6 +20,7 @@ test("cozinha planeja o almoço de um dia e vê na semana", async ({ page }, inf
   await verificarTela(page);
 
   await page.goto(`/cardapio/${dia}`);
+  await page.waitForLoadState("networkidle");
   await page.getByLabel("Almoço").fill(prato);
   await page.getByRole("button", { name: "Salvar cardápio do dia" }).click();
   await expect(page).toHaveURL(/\/cardapio\?semana=2030-03-11/);
@@ -31,6 +32,8 @@ test("contagem de restrições é salva pela cozinha e só lida pela consulta", 
   await entrarComo(page, "cozinha@colegio.local");
   await page.goto(`/restricoes?data=${dia}`);
   await expect(page.getByText(/nunca nomes/)).toBeVisible();
+  // espera a hidratação: digitar antes mistura o texto com o valor já salvo
+  await page.waitForLoadState("networkidle");
 
   const campos = page.getByRole("main").getByRole("textbox");
   await campos.first().fill("3");

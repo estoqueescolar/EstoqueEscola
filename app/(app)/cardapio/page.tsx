@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon, PencilIcon, UsersIcon } from "lucide-react";
+import { AvisoFormulario } from "@/components/comum/AvisoFormulario";
 import { CabecalhoPagina } from "@/components/comum/CabecalhoPagina";
 import { obterUsuarioAtual, pode } from "@/lib/permissoes";
 import { diasDaSemana, ehDataValida, inicioDaSemana, montarSemana, nomeDoDia, REFEICOES, refeicoesPendentes, somarDias } from "@/lib/regras/cardapio";
@@ -10,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Cardápio · Despensa CAPE" };
 
-const linkNavegacao = "inline-flex min-h-11 items-center gap-1 rounded-lg border bg-card px-3 text-sm font-medium hover:border-primary";
+const linkNavegacao = "inline-flex min-h-11 items-center gap-1 rounded-lg border border-input bg-card px-3 text-sm font-medium hover:border-primary";
 
 export default async function PaginaCardapio({ searchParams }: PageProps<"/cardapio">) {
   const { semana } = await searchParams;
@@ -20,15 +21,23 @@ export default async function PaginaCardapio({ searchParams }: PageProps<"/carda
   const sexta = dias[dias.length - 1];
 
   const supabase = await criarClienteServidor();
-  const [usuario, { data: itens }, { data: contagens }] = await Promise.all([
+  const [usuario, itens, contagens] = await Promise.all([
     obterUsuarioAtual(),
     supabase.from("cardapio_planejado").select("data, tipo_refeicao, descricao").gte("data", segunda).lte("data", sexta),
     supabase.from("contagem_restricoes").select("data, quantidade_alunos").gte("data", segunda).lte("data", sexta),
   ]);
-  const grade = montarSemana(itens ?? [], segunda);
+  if (itens.error || contagens.error) {
+    return (
+      <div className="flex flex-col gap-6">
+        <CabecalhoPagina titulo="Cardápio" />
+        <AvisoFormulario tipo="erro">Não foi possível carregar o cardápio. Confira a internet e recarregue a página.</AvisoFormulario>
+      </div>
+    );
+  }
+  const grade = montarSemana(itens.data, segunda);
   const podeEditar = pode(usuario?.perfil, "cadastrar");
   const alunosComRestricao = (data: string) =>
-    (contagens ?? []).filter((c) => c.data === data).reduce((s, c) => s + c.quantidade_alunos, 0);
+    contagens.data.filter((c) => c.data === data).reduce((s, c) => s + c.quantidade_alunos, 0);
 
   return (
     <div className="flex flex-col gap-6">
