@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArchiveIcon, LogOutIcon } from "lucide-react";
+import { ArchiveIcon, BookOpenTextIcon, LogOutIcon } from "lucide-react";
 import { Botao } from "@/components/comum/Botao";
 import { MenuPrincipal } from "@/components/comum/MenuPrincipal";
 import { itensDoPerfil } from "@/components/comum/navegacao";
@@ -37,6 +38,14 @@ export default async function LayoutSistema({ children }: LayoutProps<"/">) {
             </span>
           </div>
           <div className="flex min-w-0 items-center gap-3">
+            <Link
+              href="/manual"
+              className="hidden min-h-9 items-center gap-1.5 rounded-lg border border-input bg-card px-3 text-sm font-medium hover:border-primary sm:inline-flex print:hidden"
+              title="Manual de uso"
+            >
+              <BookOpenTextIcon className="size-4" aria-hidden="true" />
+              Manual
+            </Link>
             <p className="hidden min-w-0 text-right text-sm leading-tight md:block">
               <span className="block truncate font-medium">{usuario.nome || usuario.email}</span>
               <span className="text-muted-foreground">{NOMES_PERFIL[usuario.perfil]}</span>
