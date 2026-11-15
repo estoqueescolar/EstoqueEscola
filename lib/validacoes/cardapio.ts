@@ -30,9 +30,19 @@ const quantidadeAlunos = z
       .max(2000, "No máximo 2000 alunos."),
   );
 
-// Contagem do dia: quantos alunos com cada restrição (nunca nomes).
+export const REFEICOES_RESTRICAO = [
+  { valor: "cafe_manha",    texto: "Café da manhã" },
+  { valor: "lanche_manha",  texto: "Lanche da manhã" },
+  { valor: "almoco",        texto: "Almoço" },
+  { valor: "lanche_tarde",  texto: "Lanche da tarde" },
+] as const;
+
+export type TipoRefeicaoRestricao = (typeof REFEICOES_RESTRICAO)[number]["valor"];
+
+// Contagem por refeição: quantos alunos com cada restrição, separados por refeição.
 export const esquemaContagens = z.object({
   data: esquemaData,
+  tipo_refeicao: z.enum(["cafe_manha", "lanche_manha", "almoco", "lanche_tarde"], { message: "Refeição inválida." }),
   contagens: z.array(z.object({ tipo_restricao_id: z.uuid(), quantidade_alunos: quantidadeAlunos })).max(50),
 });
 

@@ -67,14 +67,14 @@ export type Database = {
                   ]
                 },"contagem_restricoes": {
                   Row: {
-                    "atualizado_em": string,"criado_em": string,"data": string,"id": string,"quantidade_alunos": number,"tipo_restricao_id": string
+                    "atualizado_em": string,"criado_em": string,"data": string,"id": string,"quantidade_alunos": number,"tipo_refeicao": string | null,"tipo_restricao_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "atualizado_em"?: string,"criado_em"?: string,"data": string,"id"?: string,"quantidade_alunos": number,"tipo_restricao_id": string
+                    "atualizado_em"?: string,"criado_em"?: string,"data": string,"id"?: string,"quantidade_alunos": number,"tipo_refeicao"?: string | null,"tipo_restricao_id": string
                   }
                   Update: {
-                    "atualizado_em"?: string,"criado_em"?: string,"data"?: string,"id"?: string,"quantidade_alunos"?: number,"tipo_restricao_id"?: string
+                    "atualizado_em"?: string,"criado_em"?: string,"data"?: string,"id"?: string,"quantidade_alunos"?: number,"tipo_refeicao"?: string | null,"tipo_restricao_id"?: string
                   }
                   Relationships: [
                     {

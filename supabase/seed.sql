@@ -210,9 +210,10 @@ insert into public.tipos_restricao (nome, descricao) values
   ('Vegetariano', 'Sem carnes; ovos e laticínios liberados'),
   ('Diabetes', 'Evitar açúcar adicionado; preferir frutas inteiras');
 
-insert into public.contagem_restricoes (data, tipo_restricao_id, quantidade_alunos)
-select public.hoje() - d.dias_atras, t.id, t.base + (d.dias_atras % 2)
+insert into public.contagem_restricoes (data, tipo_refeicao, tipo_restricao_id, quantidade_alunos)
+select public.hoje() - d.dias_atras, r.refeicao, t.id, t.base + (d.dias_atras % 2)
 from (values (0), (1), (2), (3), (4)) as d (dias_atras)
+cross join (values ('cafe_manha'), ('lanche_manha'), ('almoco'), ('lanche_tarde')) as r (refeicao)
 cross join (
   select id, case nome
     when 'Intolerância à lactose' then 9

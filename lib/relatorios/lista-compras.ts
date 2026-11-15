@@ -30,9 +30,6 @@ export function gerarPdfListaCompras(itens: ItemListaPdf[], usuario: string, { c
     doc.setFont("helvetica", "normal").setFontSize(9).setTextColor(80, 90, 85);
     doc.text(`Emitido em ${hoje} por ${usuario}`, MARGEM, 28);
     doc.setDrawColor(...COR_PRIMARIA).setLineWidth(0.4).line(MARGEM, 31, largura - MARGEM, 31);
-    // Legenda
-    doc.setFontSize(8).setTextColor(110, 115, 112);
-    doc.text("★ = estoque baixo   ○ = item extra", largura - MARGEM, 28, { align: "right" });
     // Rodapé
     doc.setFontSize(8);
     doc.text("Gerado pelo Despensa CAPE", MARGEM, altura - 8);
@@ -40,17 +37,17 @@ export function gerarPdfListaCompras(itens: ItemListaPdf[], usuario: string, { c
   };
 
   const linhas = itens.map((i) => [
-    `${i.extra ? "○" : "★"} ${i.nome}`,
+    i.nome,
     `${i.quantidade}${i.unidade ? " " + i.unidade : ""}`,
     i.fornecedor ?? "",
-    "",   // preço (preenchimento manual)
+    i.extra ? "Extra" : "Est. baixo",
     "",   // check (preenchimento manual)
   ]);
 
   autoTable(doc, {
     startY: 36,
     margin: { top: 36, left: MARGEM, right: MARGEM, bottom: 16 },
-    head: [["Produto", "Quantidade", "Fornecedor", "Preço R$", "✓"]],
+    head: [["Produto", "Quantidade", "Fornecedor", "Tipo", "v"]],
     body: linhas,
     styles: { font: "helvetica", fontSize: 9, cellPadding: 2.2, textColor: [30, 40, 35] },
     headStyles: { fillColor: COR_PRIMARIA, textColor: 255, fontStyle: "bold" },
@@ -59,7 +56,7 @@ export function gerarPdfListaCompras(itens: ItemListaPdf[], usuario: string, { c
       0: { cellWidth: "auto" },
       1: { cellWidth: 28, halign: "right" },
       2: { cellWidth: 36 },
-      3: { cellWidth: 20, halign: "right" },
+      3: { cellWidth: 24 },
       4: { cellWidth: 10, halign: "center" },
     },
     didDrawPage: cabecalho,
