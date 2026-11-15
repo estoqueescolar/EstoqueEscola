@@ -25,17 +25,17 @@ export type Database = {
           Tables: {
             "cardapio_planejado": {
                   Row: {
-                    "atualizado_em": string,"criado_em": string,"data": string,"descricao": string,"id": string,"tipo_refeicao": string
+                    "atualizado_em": string,"criado_em": string,"data": string,"descricao": string,"id": string,"receita_id": string | null,"tipo_refeicao": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "atualizado_em"?: string,"criado_em"?: string,"data": string,"descricao": string,"id"?: string,"tipo_refeicao": string
+                    "atualizado_em"?: string,"criado_em"?: string,"data": string,"descricao": string,"id"?: string,"receita_id"?: string | null,"tipo_refeicao": string
                   }
                   Update: {
-                    "atualizado_em"?: string,"criado_em"?: string,"data"?: string,"descricao"?: string,"id"?: string,"tipo_refeicao"?: string
+                    "atualizado_em"?: string,"criado_em"?: string,"data"?: string,"descricao"?: string,"id"?: string,"receita_id"?: string | null,"tipo_refeicao"?: string
                   }
                   Relationships: [
-                    
+                    {foreignKeyName: "cardapio_planejado_receita_id_fkey";columns: ["receita_id"];isOneToOne: false;referencedRelation: "receitas";referencedColumns: ["id"]}
                   ]
                 },"categorias": {
                   Row: {
@@ -208,6 +208,33 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"receitas": {
+                  Row: {
+                    "ativo": boolean,"atualizado_em": string,"criado_em": string,"descricao": string | null,"id": string,"modo_preparo": string | null,"nome": string,"porcoes_base": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ativo"?: boolean,"atualizado_em"?: string,"criado_em"?: string,"descricao"?: string | null,"id"?: string,"modo_preparo"?: string | null,"nome": string,"porcoes_base"?: number
+                  }
+                  Update: {
+                    "ativo"?: boolean,"atualizado_em"?: string,"criado_em"?: string,"descricao"?: string | null,"id"?: string,"modo_preparo"?: string | null,"nome"?: string,"porcoes_base"?: number
+                  }
+                  Relationships: []
+                },"ingredientes_receita": {
+                  Row: {
+                    "atualizado_em": string,"criado_em": string,"id": string,"observacao": string | null,"produto_id": string,"quantidade": number,"receita_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "atualizado_em"?: string,"criado_em"?: string,"id"?: string,"observacao"?: string | null,"produto_id": string,"quantidade": number,"receita_id": string
+                  }
+                  Update: {
+                    "atualizado_em"?: string,"criado_em"?: string,"id"?: string,"observacao"?: string | null,"produto_id"?: string,"quantidade"?: number,"receita_id"?: string
+                  }
+                  Relationships: [
+                    {foreignKeyName: "ingredientes_receita_receita_id_fkey";columns: ["receita_id"];isOneToOne: false;referencedRelation: "receitas";referencedColumns: ["id"]},
+                    {foreignKeyName: "ingredientes_receita_produto_id_fkey";columns: ["produto_id"];isOneToOne: false;referencedRelation: "produtos";referencedColumns: ["id"]}
                   ]
                 },"produtos": {
                   Row: {

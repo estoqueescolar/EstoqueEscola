@@ -5,7 +5,7 @@ export interface ItemMenu {
   texto: string;
   icone:
     | "painel" | "produtos" | "lotes" | "movimentacoes" | "cardapio"
-    | "restricoes" | "relatorios" | "cadastros" | "usuarios" | "compras" | "configuracoes";
+    | "restricoes" | "relatorios" | "cadastros" | "usuarios" | "compras" | "configuracoes" | "receitas";
   // perfis que veem o item; ausente = todos
   perfis?: readonly Perfil[];
   // funcionalidade ainda em construção: aparece no menu com cadeado e não navega
@@ -19,6 +19,7 @@ export const ITENS_MENU: readonly ItemMenu[] = [
   { href: "/movimentacoes", texto: "Movimentações", icone: "movimentacoes" },
   { href: "/compras", texto: "Lista de compras", icone: "compras" },
   { href: "/cardapio", texto: "Cardápio", icone: "cardapio" },
+  { href: "/receitas", texto: "Receitas", icone: "receitas" },
   { href: "/restricoes", texto: "Restrições", icone: "restricoes" },
   { href: "/relatorios", texto: "Relatórios", icone: "relatorios" },
   { href: "/cadastros", texto: "Cadastros", icone: "cadastros" },

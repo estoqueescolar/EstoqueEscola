@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ArrowLeftRightIcon, BoxesIcon, CalendarDaysIcon, FileTextIcon, HouseIcon,
-  ArchiveIcon, LockIcon, MenuIcon, PackageIcon, XIcon, UsersIcon, UtensilsIcon, ShoppingBasketIcon, SlidersHorizontalIcon, TagsIcon,
+  ArchiveIcon, ChefHatIcon, LockIcon, MenuIcon, PackageIcon, XIcon, UsersIcon, UtensilsIcon, ShoppingBasketIcon, SlidersHorizontalIcon, TagsIcon,
 } from "lucide-react";
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Botao } from "./Botao";
@@ -24,6 +24,7 @@ const ICONES: Record<ItemMenu["icone"], typeof HouseIcon> = {
   compras: ShoppingBasketIcon,
   configuracoes: SlidersHorizontalIcon,
   usuarios: UsersIcon,
+  receitas: ChefHatIcon,
 };
 
 function ativo(caminho: string, href: string) {

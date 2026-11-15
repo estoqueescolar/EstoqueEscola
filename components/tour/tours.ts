@@ -291,6 +291,33 @@ export const TOURS: Record<string, PassoTour[]> = {
     },
   ],
 
+  "/receitas": [
+    {
+      popover: {
+        title: "Caderno de receitas",
+        description:
+          "Aqui você cadastra as receitas da cozinha com ingredientes e modo de preparo. Cada receita mostra quanto estoque será consumido.",
+      },
+    },
+    {
+      element: "[data-tour='btn-nova-receita']",
+      popover: {
+        title: "Nova receita",
+        description: "Clique aqui para cadastrar uma nova receita com nome, descrição, porções e modo de preparo.",
+        side: "bottom",
+      },
+    },
+    {
+      element: "[data-tour='lista-receitas']",
+      popover: {
+        title: "Lista de receitas",
+        description:
+          "Todas as receitas ativas aparecem aqui. Clique em uma receita para ver os ingredientes e ter a opção de preparar, o que vai registrar automaticamente a saída dos ingredientes do estoque.",
+        side: "top",
+      },
+    },
+  ],
+
   "/configuracoes": [
     {
       popover: {
