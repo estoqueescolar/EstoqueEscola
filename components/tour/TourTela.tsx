@@ -11,7 +11,8 @@ const CHAVE_BOAS_VINDAS = "cape_tour_boas_vindas_visto";
 const chaveTour = (rota: string) => `cape_tour_${rota.replace(/\//g, "_")}_visto`;
 
 function criarDriver(aoFim?: () => void) {
-  return driver({
+  let d: ReturnType<typeof driver>;
+  d = driver({
     showProgress: true,
     nextBtnText: "Próximo →",
     prevBtnText: "← Anterior",
@@ -22,9 +23,10 @@ function criarDriver(aoFim?: () => void) {
     overlayOpacity: 0.4,
     onDestroyStarted: () => {
       aoFim?.();
-      return true;
+      d.destroy();
     },
   });
+  return d;
 }
 
 // Hook exportado: usado pelo botão ? no layout para iniciar o tour manualmente.
