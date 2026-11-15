@@ -99,6 +99,18 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"lista_compras_manual": {
+                  Row: {
+                    "atualizado_em": string,"comprado": boolean,"criado_em": string,"id": string,"nome": string,"quantidade": string,"unidade": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "atualizado_em"?: string,"comprado"?: boolean,"criado_em"?: string,"id"?: string,"nome": string,"quantidade": string,"unidade"?: string
+                  }
+                  Update: {
+                    "atualizado_em"?: string,"comprado"?: boolean,"criado_em"?: string,"id"?: string,"nome"?: string,"quantidade"?: string,"unidade"?: string
+                  }
+                  Relationships: []
                 },"locais_armazenamento": {
                   Row: {
                     "atualizado_em": string,"criado_em": string,"descricao": string | null,"id": string,"nome": string
