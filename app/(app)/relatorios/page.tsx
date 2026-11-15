@@ -34,7 +34,7 @@ export default async function PaginaRelatorios({ searchParams }: PageProps<"/rel
     <div className="flex flex-col gap-6">
       <CabecalhoPagina titulo="Relatórios" descricao="Escolha o período e baixe em PDF (para imprimir) ou Excel (para editar)." />
       {textoErro && <AvisoFormulario tipo="erro" focar>{textoErro}</AvisoFormulario>}
-      <ul className="grid gap-4 lg:grid-cols-3">
+      <ul className="grid gap-4 lg:grid-cols-3" data-tour="opcoes-relatorio">
         {TIPOS_RELATORIO.map((tipo) => (
           <li key={tipo} className="flex flex-col gap-4 rounded-xl border bg-card p-4 sm:p-5">
             <div>
@@ -42,7 +42,7 @@ export default async function PaginaRelatorios({ searchParams }: PageProps<"/rel
               <p className="mt-1 text-sm text-muted-foreground">{DESCRICOES[tipo]}</p>
             </div>
             <form action={`/api/relatorios/${tipo}`} method="get" className="mt-auto flex flex-col gap-3">
-              <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2" data-tour="periodo-relatorio">
                 <label className="flex min-w-0 flex-col gap-1.5 text-sm font-medium">
                   De
                   <input type="date" name="inicio" required defaultValue={tipo === "perdas" ? somarDias(hoje, -30) : inicioMes} max={hoje} className={campoData} />

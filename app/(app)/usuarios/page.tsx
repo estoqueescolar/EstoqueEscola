@@ -33,7 +33,7 @@ export default async function PaginaUsuarios() {
         <h2 id="titulo-novo" className="mb-4 text-xl font-semibold">Criar conta</h2>
         <FormularioNovoUsuario />
       </section>
-      <section aria-labelledby="titulo-lista" className="flex flex-col gap-4">
+      <section aria-labelledby="titulo-lista" className="flex flex-col gap-4" data-tour="lista-usuarios">
         <h2 id="titulo-lista" className="text-xl font-semibold">
           Contas cadastradas <span className="font-normal text-muted-foreground">({usuarios.length})</span>
         </h2>

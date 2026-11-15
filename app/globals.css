@@ -166,3 +166,74 @@ input::-ms-reveal,
 input::-ms-clear {
   display: none;
 }
+
+/* Driver.js — sobrescreve o tema padrão com as cores da Despensa CAPE */
+.driver-popover {
+  background-color: #ffffff;
+  color: var(--grafite);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  font-family: var(--font-sans);
+  max-width: 320px;
+}
+.driver-popover-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--grafite);
+  margin-bottom: 0.375rem;
+}
+.driver-popover-description {
+  font-size: 0.875rem;
+  color: var(--grafite-suave);
+  line-height: 1.5;
+}
+.driver-popover-arrow-side-top.driver-popover-arrow { border-bottom-color: #ffffff; }
+.driver-popover-arrow-side-bottom.driver-popover-arrow { border-top-color: #ffffff; }
+.driver-popover-arrow-side-left.driver-popover-arrow { border-right-color: #ffffff; }
+.driver-popover-arrow-side-right.driver-popover-arrow { border-left-color: #ffffff; }
+.driver-popover-footer {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.driver-popover-btn-disabled { display: none !important; }
+.driver-popover-prev-btn,
+.driver-popover-next-btn,
+.driver-popover-done-btn {
+  background-color: var(--manjericao);
+  color: #ffffff;
+  border: none;
+  border-radius: calc(var(--radius) * 0.8);
+  padding: 0.4rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 36px;
+  transition: background-color 0.15s;
+}
+.driver-popover-prev-btn {
+  background-color: transparent;
+  color: var(--manjericao);
+  border: 1px solid var(--border);
+}
+.driver-popover-prev-btn:hover { background-color: var(--manjericao-fundo); }
+.driver-popover-next-btn:hover,
+.driver-popover-done-btn:hover { background-color: var(--manjericao-escuro); }
+.driver-popover-progress-text {
+  flex: 1;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--grafite-suave);
+}
+.driver-popover-close-btn {
+  color: var(--grafite-suave);
+  font-size: 1.25rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+.driver-popover-close-btn:hover { color: var(--grafite); }

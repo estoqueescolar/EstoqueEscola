@@ -46,7 +46,7 @@ export default async function PaginaCardapio({ searchParams }: PageProps<"/carda
         descricao={`Semana de ${formatarData(segunda)} a ${formatarData(sexta)} · 4 refeições por dia`}
       />
 
-      <nav aria-label="Trocar de semana" className="flex flex-wrap gap-2">
+      <nav aria-label="Trocar de semana" data-tour="nav-semana" className="flex flex-wrap gap-2">
         <Link href={`/cardapio?semana=${somarDias(segunda, -7)}`} className={linkNavegacao}>
           <ChevronLeftIcon className="size-4" aria-hidden="true" /> Semana anterior
         </Link>
@@ -60,7 +60,7 @@ export default async function PaginaCardapio({ searchParams }: PageProps<"/carda
         </Link>
       </nav>
 
-      <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3" data-tour="grade-semana">
         {grade.map((dia) => {
           const pendentes = refeicoesPendentes(dia);
           const restricoes = alunosComRestricao(dia.data);

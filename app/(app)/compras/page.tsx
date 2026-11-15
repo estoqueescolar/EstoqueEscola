@@ -33,7 +33,7 @@ export default async function PaginaCompras() {
           Todos os produtos estão acima do estoque mínimo.
         </p>
       ) : (
-        <ul className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-2" data-tour="lista-compras">
           {listaCompras.map((item) => (
             <li key={item.produto_id} className="flex flex-col gap-3 rounded-xl border bg-card p-4 md:flex-row md:items-center md:justify-between">
               <div className="flex min-w-0 flex-col gap-2">

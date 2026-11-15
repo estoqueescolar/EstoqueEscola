@@ -55,9 +55,9 @@ function CartaoIndicador({ href, valor, rotulo, Icone, tom }: Indicador) {
   );
 }
 
-function SecaoAlerta({ id, titulo, href, textoLink, children }: { id: string; titulo: string; href: string; textoLink: string; children: ReactNode }) {
+function SecaoAlerta({ id, titulo, href, textoLink, children, "data-tour": dataTour }: { id: string; titulo: string; href: string; textoLink: string; children: ReactNode; "data-tour"?: string }) {
   return (
-    <section aria-labelledby={id} className="flex flex-col gap-3 rounded-xl border bg-card p-4 sm:p-5">
+    <section aria-labelledby={id} data-tour={dataTour} className="flex flex-col gap-3 rounded-xl border bg-card p-4 sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id={id} className="text-lg font-semibold">
           {titulo}
@@ -103,7 +103,7 @@ export default async function PaginaPainel({ searchParams }: PageProps<"/painel"
           </p>
         </div>
         {podeMovimentar && (
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2 sm:flex-row" data-tour="btn-entrada">
             <LinkBotao href="/lotes/entrada" principal>
               <ArrowDownToLineIcon className="size-5" aria-hidden="true" /> Registrar entrada
             </LinkBotao>
@@ -114,7 +114,7 @@ export default async function PaginaPainel({ searchParams }: PageProps<"/painel"
         )}
       </div>
 
-      <section aria-label="Indicadores">
+      <section aria-label="Indicadores" data-tour="indicadores">
         <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {cartoes.map((c) => (
             <CartaoIndicador key={c.href} {...c} />
@@ -123,7 +123,7 @@ export default async function PaginaPainel({ searchParams }: PageProps<"/painel"
       </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <SecaoAlerta id="titulo-validade" titulo="Validade" href="/lotes" textoLink="Ver lotes">
+        <SecaoAlerta id="titulo-validade" titulo="Validade" href="/lotes" textoLink="Ver lotes" data-tour="alerta-validade">
           {alertasValidade.length === 0 ? (
             <TudoEmDia texto={`Nenhum lote vencido ou vencendo nos próximos ${plural(diasAlerta, "dia", "dias")}.`} />
           ) : (
@@ -158,7 +158,7 @@ export default async function PaginaPainel({ searchParams }: PageProps<"/painel"
           )}
         </SecaoAlerta>
 
-        <SecaoAlerta id="titulo-compras" titulo="Estoque baixo" href="/compras" textoLink="Lista de compras">
+        <SecaoAlerta id="titulo-compras" titulo="Estoque baixo" href="/compras" textoLink="Lista de compras" data-tour="lista-compras">
           {listaCompras.length === 0 ? (
             <TudoEmDia texto="Todos os produtos estão acima do estoque mínimo." />
           ) : (

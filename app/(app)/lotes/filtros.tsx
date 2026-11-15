@@ -20,7 +20,7 @@ export function FiltrosLotes({ locais, valores, diasAlerta }: Props) {
     { valor: "encerrados", texto: "Lotes encerrados (zerados)" },
   ];
   return (
-    <Form action="/lotes" role="search" aria-label="Filtrar lotes" className="grid gap-3 rounded-xl border bg-card p-4 md:grid-cols-3">
+    <Form action="/lotes" role="search" aria-label="Filtrar lotes" data-tour="filtros-lotes" className="grid gap-3 rounded-xl border bg-card p-4 md:grid-cols-3">
       <CampoTexto rotulo="Buscar produto ou lote" name="busca" type="search" defaultValue={valores.busca} autoComplete="off" />
       <CampoSelecao rotulo="Local" name="local" opcoes={locais} textoVazio="Todos" defaultValue={valores.local} />
       <CampoSelecao rotulo="Validade" name="situacao" opcoes={situacoes} textoVazio="Todos com estoque" defaultValue={valores.situacao} />

@@ -75,7 +75,7 @@ export default async function PaginaRestricoes({ searchParams }: PageProps<"/res
         </Link>
       </nav>
 
-      <section aria-labelledby="titulo-dia" className="flex flex-col gap-3">
+      <section aria-labelledby="titulo-dia" data-tour="tabela-restricoes" className="flex flex-col gap-3">
         <h2 id="titulo-dia" className="text-lg font-semibold">
           {nomeDoDia(data)}, {formatarData(data)}
           {data === hoje && <span className="font-normal text-muted-foreground"> · hoje</span>}

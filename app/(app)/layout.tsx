@@ -4,6 +4,8 @@ import { Botao } from "@/components/comum/Botao";
 import { MenuPrincipal } from "@/components/comum/MenuPrincipal";
 import { itensDoPerfil } from "@/components/comum/navegacao";
 import { NOMES_PERFIL, obterUsuarioAtual } from "@/lib/permissoes";
+import { BotaoAjuda } from "@/components/tour/BotaoAjuda";
+import { TourAutomatico } from "@/components/tour/TourTela";
 import { sair } from "../(auth)/actions";
 
 export default async function LayoutSistema({ children }: LayoutProps<"/">) {
@@ -56,6 +58,8 @@ export default async function LayoutSistema({ children }: LayoutProps<"/">) {
           {children}
         </main>
       </div>
+      <TourAutomatico />
+      <BotaoAjuda />
     </div>
   );
 }

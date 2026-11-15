@@ -44,13 +44,13 @@ export default async function PaginaMovimentacoes({ searchParams }: PageProps<"/
         acoes={
           pode(usuario?.perfil, "movimentar") && (
             <>
-              <LinkBotao href="/movimentacoes/saida" principal>
+              <LinkBotao href="/movimentacoes/saida" principal data-tour="btn-saida">
                 <ArrowUpFromLineIcon className="size-5" aria-hidden="true" /> Registrar saída
               </LinkBotao>
-              <LinkBotao perigo href="/movimentacoes/perda">
+              <LinkBotao perigo href="/movimentacoes/perda" data-tour="btn-perda">
                 <Trash2Icon className="size-5" aria-hidden="true" /> Registrar perda
               </LinkBotao>
-              <LinkBotao href="/movimentacoes/ajuste">
+              <LinkBotao href="/movimentacoes/ajuste" data-tour="btn-ajuste">
                 <ScaleIcon className="size-5" aria-hidden="true" /> Registrar ajuste
               </LinkBotao>
             </>
@@ -65,10 +65,12 @@ export default async function PaginaMovimentacoes({ searchParams }: PageProps<"/
             ? "1 movimentação"
             : `${movimentacoes.length} movimentações`}
       </p>
-      <ListaMovimentacoes
-        movimentacoes={movimentacoes}
-        textoVazio={filtrando ? "Nenhuma movimentação com esses filtros." : "Nenhuma movimentação registrada ainda."}
-      />
+      <div data-tour="lista-movimentacoes">
+        <ListaMovimentacoes
+          movimentacoes={movimentacoes}
+          textoVazio={filtrando ? "Nenhuma movimentação com esses filtros." : "Nenhuma movimentação registrada ainda."}
+        />
+      </div>
     </div>
   );
 }

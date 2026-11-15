@@ -48,7 +48,7 @@ export default async function PaginaLotes({ searchParams }: PageProps<"/lotes">)
         descricao="Lotes com estoque, do que vence antes para o que vence depois."
         acoes={
           pode(usuario?.perfil, "movimentar") && (
-            <LinkBotao href="/lotes/entrada" principal>
+            <LinkBotao href="/lotes/entrada" principal data-tour="btn-entrada">
               <PlusIcon className="size-5" aria-hidden="true" /> Registrar entrada
             </LinkBotao>
           )
@@ -63,7 +63,7 @@ export default async function PaginaLotes({ searchParams }: PageProps<"/lotes">)
           {filtrando ? "Nenhum lote encontrado com esses filtros." : "Nenhum lote com estoque. Registre uma entrada de mercadoria."}
         </p>
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3" data-tour="lista-lotes">
           {lista.map((lote) => (
             <li key={lote.id}>
               <CartaoLote lote={lote} hoje={hoje} diasAlerta={config.diasAlertaValidade} />

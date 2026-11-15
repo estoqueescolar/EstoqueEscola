@@ -55,6 +55,7 @@ export default async function PaginaProdutos({ searchParams }: PageProps<"/produ
         {podeCadastrar && (
           <Link
             href="/produtos/novo"
+            data-tour="btn-novo-produto"
             className="flex min-h-12 w-fit items-center gap-2 rounded-lg bg-primary px-5 text-base font-medium text-primary-foreground hover:bg-[var(--manjericao-escuro)]"
           >
             <PlusIcon className="size-5" aria-hidden="true" /> Cadastrar produto
@@ -89,7 +90,7 @@ export default async function PaginaProdutos({ searchParams }: PageProps<"/produ
           )}
         </div>
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3" data-tour="lista-produtos">
           {lista.map((p) => (
             <li key={p.id}>
               <Link href={`/produtos/${p.id}`} className="flex h-full flex-col gap-3 rounded-xl border bg-card p-4 hover:border-primary">

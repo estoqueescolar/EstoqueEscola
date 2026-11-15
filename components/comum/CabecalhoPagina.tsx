@@ -30,10 +30,11 @@ export function CabecalhoPagina({ titulo, descricao, voltar, acoes }: Props) {
 }
 
 // Link com aparência de botão (mesmo alvo de 44/48px do Botao).
-export function LinkBotao({ href, children, principal = false, perigo = false }: { href: string; children: ReactNode; principal?: boolean; perigo?: boolean }) {
+export function LinkBotao({ href, children, principal = false, perigo = false, "data-tour": dataTour }: { href: string; children: ReactNode; principal?: boolean; perigo?: boolean; "data-tour"?: string }) {
   return (
     <Link
       href={href}
+      data-tour={dataTour}
       className={
         "flex items-center justify-center gap-2 rounded-lg text-base font-medium " +
         (principal
