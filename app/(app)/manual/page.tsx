@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PrinterIcon } from "lucide-react";
+import { BotaoImprimir } from "./botao-imprimir";
 
 export const metadata: Metadata = { title: "Manual de uso · Despensa CAPE" };
 
@@ -8,13 +8,7 @@ export default function PaginaManual() {
     <div className="mx-auto max-w-3xl pb-16 print:max-w-none print:pb-0">
       {/* Botão imprimir — oculto na impressão */}
       <div className="mb-6 flex justify-end print:hidden">
-        <button
-          onClick={() => window.print()}
-          className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-input bg-card px-4 text-sm font-medium hover:border-primary"
-        >
-          <PrinterIcon className="size-4" aria-hidden="true" />
-          Imprimir / Salvar PDF
-        </button>
+        <BotaoImprimir />
       </div>
 
       <article className="prose prose-sm max-w-none
