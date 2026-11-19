@@ -31,14 +31,15 @@ test("contagem de restrições é salva pela cozinha e só lida pela consulta", 
   const dia = DIAS[info.project.name] ?? "2030-03-14";
   await entrarComo(page, "cozinha@colegio.local");
   await page.goto(`/restricoes?data=${dia}`);
-  await expect(page.getByText(/nunca nomes/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Contagem do dia" })).toHaveAttribute("aria-current", "page");
   // espera a hidratação: digitar antes mistura o texto com o valor já salvo
   await page.waitForLoadState("networkidle");
 
-  const campos = page.getByRole("main").getByRole("textbox");
+  // a contagem é por refeição: a primeira aba (café da manhã) abre selecionada
+  const campos = page.getByRole("tabpanel").getByRole("textbox");
   await campos.first().fill("3");
-  await expect(page.getByText(/Total: 3 alunos/)).toBeVisible();
-  await page.getByRole("button", { name: "Salvar contagem" }).click();
+  await expect(page.getByText(/Total nesta refeição: 3 alunos/)).toBeVisible();
+  await page.getByRole("button", { name: /^Salvar café da manhã/ }).click();
   await expect(page.getByText(/salva: 3 alunos com restrição/)).toBeVisible();
   await verificarTela(page);
 
@@ -46,7 +47,7 @@ test("contagem de restrições é salva pela cozinha e só lida pela consulta", 
   await expect(page).toHaveURL(/\/login/);
   await entrarComo(page, "consulta@colegio.local");
   await page.goto(`/restricoes?data=${dia}`);
-  await expect(page.getByRole("button", { name: "Salvar contagem" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /^Salvar / })).toHaveCount(0);
   await expect(page.getByRole("main").getByText("3", { exact: true }).first()).toBeVisible();
   await page.goto(`/cardapio/${dia}`);
   await expect(page).toHaveURL(/\/cardapio$/);

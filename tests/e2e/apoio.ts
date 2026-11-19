@@ -32,6 +32,8 @@ export async function entrar(page: Page, email: string, senha = SENHA_DEMO) {
 
 // Sem rolagem horizontal da página e sem violações graves de acessibilidade (axe).
 export async function verificarTela(page: Page) {
+  // o Next preenche o <title> depois da hidratação; o axe reprova página sem título
+  await expect(page).toHaveTitle(/.+/);
   const larguras = await page.evaluate(() => ({
     conteudo: document.documentElement.scrollWidth,
     janela: window.innerWidth,
