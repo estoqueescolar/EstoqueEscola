@@ -177,7 +177,9 @@ export function FormularioAluno({ tipos: tiposIniciais, aluno, podeExcluir }: Pr
     iniciar(async () => {
       const supabase = criarClienteNavegador();
       let caminhoFoto: string | null | undefined;
-      if (fotoNova) {
+      if (!dados.autorizacao_responsaveis) {
+        caminhoFoto = aluno?.fotoUrl ? null : undefined;
+      } else if (fotoNova) {
         caminhoFoto = nomeArquivoFoto(crypto.randomUUID(), "image/jpeg");
         const { error } = await supabase.storage.from(BUCKET).upload(caminhoFoto, fotoNova.blob, { contentType: "image/jpeg" });
         if (error) {
@@ -234,7 +236,21 @@ export function FormularioAluno({ tipos: tiposIniciais, aluno, podeExcluir }: Pr
     <form onSubmit={enviar} noValidate className="flex max-w-3xl flex-col gap-5">
       {aviso && <AvisoFormulario tipo="erro">{aviso}</AvisoFormulario>}
 
-      <Etapa numero={1} id="titulo-dados" titulo="Quem é o aluno" descricao="A foto ajuda a cozinha a reconhecer o rosto na hora de servir.">
+      <Etapa numero={1} id="titulo-autorizacao" titulo="Autorização da família" descricao="Sem autorização, o aluno é cadastrado sem foto.">
+        <label className={cn("flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2 text-base", autorizado ? "border-primary bg-ok-fundo" : "border-input")}>
+          <input type="checkbox" className="size-6 shrink-0 accent-primary" {...form.register("autorizacao_responsaveis")} />
+          A família autorizou o uso do nome e da foto
+        </label>
+        <p className="text-sm text-muted-foreground">O documento assinado fica com a direção. Aqui só registramos que ele existe.</p>
+        {!autorizado && temFoto && (
+          <p role="alert" className="flex items-start gap-2 rounded-lg bg-alerta-fundo p-3 text-sm text-alerta-texto">
+            <TriangleAlertIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            Sem autorização, a foto será apagada ao salvar.
+          </p>
+        )}
+      </Etapa>
+
+      <Etapa numero={2} id="titulo-dados" titulo="Quem é o aluno" descricao="A foto ajuda a cozinha a reconhecer o rosto na hora de servir.">
         <div className="flex flex-col gap-5 sm:flex-row">
           <div className="flex flex-col items-center gap-3 sm:w-44">
             <FotoAluno url={urlFoto} nome={nomeAluno || "Aluno"} />
@@ -242,12 +258,12 @@ export function FormularioAluno({ tipos: tiposIniciais, aluno, podeExcluir }: Pr
               <label className={classeBotaoArquivo}>
                 <CameraIcon className="size-5" aria-hidden="true" />
                 Tirar foto
-                <input id={ID_TIRAR_FOTO} type="file" accept="image/*" capture="user" className="sr-only" disabled={preparandoFoto} onChange={(e) => { void aoEscolherFoto(e.target.files?.[0]); e.target.value = ""; }} />
+                <input id={ID_TIRAR_FOTO} type="file" accept="image/*" capture="environment" className="sr-only" disabled={preparandoFoto || !autorizado} onChange={(e) => { void aoEscolherFoto(e.target.files?.[0]); e.target.value = ""; }} />
               </label>
               <label className={classeBotaoArquivo}>
                 <ImageIcon className="size-5" aria-hidden="true" />
                 Da galeria
-                <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={preparandoFoto} onChange={(e) => { void aoEscolherFoto(e.target.files?.[0]); e.target.value = ""; }} />
+                <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={preparandoFoto || !autorizado} onChange={(e) => { void aoEscolherFoto(e.target.files?.[0]); e.target.value = ""; }} />
               </label>
               {temFoto && (
                 <Botao type="button" variant="ghost" onClick={() => { setFotoNova(null); setRemoverFoto(true); focarDepois(ID_TIRAR_FOTO); }}>
@@ -255,6 +271,9 @@ export function FormularioAluno({ tipos: tiposIniciais, aluno, podeExcluir }: Pr
                 </Botao>
               )}
             </div>
+            {!autorizado && (
+              <p className="text-center text-sm text-muted-foreground">Para adicionar a foto, marque a autorização no passo 1.</p>
+            )}
             {preparandoFoto && (
               <p role="status" className="flex items-center gap-2 text-sm font-medium">
                 <Loader2Icon className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" /> Preparando foto…
@@ -276,7 +295,7 @@ export function FormularioAluno({ tipos: tiposIniciais, aluno, podeExcluir }: Pr
       </Etapa>
 
       <Etapa
-        numero={2}
+        numero={3}
         id="titulo-alergias"
         titulo="Alergias e restrições"
         descricao="Marque pelo menos uma e escolha o nível. Não achou na lista? Crie a alergia aqui mesmo."
@@ -350,19 +369,6 @@ export function FormularioAluno({ tipos: tiposIniciais, aluno, podeExcluir }: Pr
         {erroRestricoes && <p id="erro-restricoes" role="alert" className="text-sm font-medium text-destructive">{erroRestricoes}</p>}
       </Etapa>
 
-      <Etapa numero={3} id="titulo-autorizacao" titulo="Autorização da família">
-        <label className="flex min-h-11 cursor-pointer items-center gap-3 text-base">
-          <input type="checkbox" className="size-6 shrink-0 accent-primary" {...form.register("autorizacao_responsaveis")} />
-          A família autorizou o uso do nome e da foto
-        </label>
-        <p className="text-sm text-muted-foreground">O documento assinado fica com a direção. Aqui só registramos que ele existe.</p>
-        {temFoto && !autorizado && (
-          <p className="flex items-start gap-2 rounded-lg bg-alerta-fundo p-3 text-sm text-alerta-texto">
-            <TriangleAlertIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-            Sem autorização da família, não cadastre a foto. Confirme com a direção antes de salvar.
-          </p>
-        )}
-      </Etapa>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <Botao type="submit" tamanho="principal" carregando={enviando} textoCarregando="Salvando…" disabled={preparandoFoto}>

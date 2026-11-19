@@ -32,6 +32,9 @@ export async function salvarAluno(
     if (id !== null && !esquemaId.safeParse(id).success) return { ok: false, mensagem: "Aluno inválido." };
 
     const { restricoes, ...campos } = v.data;
+    if (typeof foto.data === "string" && !campos.autorizacao_responsaveis) {
+      return { ok: false, mensagem: "Para salvar a foto, marque que a família autorizou o uso do nome e da foto." };
+    }
     const supabase = await criarClienteServidor();
 
     let alunoId = id;
@@ -73,12 +76,14 @@ export async function salvarAluno(
 
     // A foto é o último passo: se algo antes falhar, nenhum aluno aponta para o arquivo enviado
     // e o navegador pode apagá-lo com segurança. O índice único impede dois alunos com o mesmo arquivo.
-    if (foto.data !== undefined) {
-      const { error: erroFoto } = await supabase.from("alunos").update({ foto_caminho: foto.data }).eq("id", alunoId);
+    // Sem autorização, a foto atual é apagada (o banco também recusa foto sem autorização).
+    const fotoFinal = !campos.autorizacao_responsaveis && fotoAntiga ? null : foto.data;
+    if (fotoFinal !== undefined) {
+      const { error: erroFoto } = await supabase.from("alunos").update({ foto_caminho: fotoFinal }).eq("id", alunoId);
       if (erroFoto?.code === "23505") return { ok: false, mensagem: "Essa foto já pertence a outro aluno. Tire ou escolha outra foto." };
       if (erroFoto) return falha(erroFoto);
       // Arquivo antigo: falha ao apagar não impede o salvamento (fica órfão no bucket).
-      if (fotoAntiga && foto.data !== fotoAntiga) await supabase.storage.from(BUCKET).remove([fotoAntiga]);
+      if (fotoAntiga && fotoFinal !== fotoAntiga) await supabase.storage.from(BUCKET).remove([fotoAntiga]);
     }
 
     atualizarTelas();

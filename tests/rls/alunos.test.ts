@@ -204,6 +204,16 @@ describe("perfil operador", () => {
     expect(error).not.toBeNull();
   });
 
+  it("recusa foto sem autorização da família", async () => {
+    const { data: semAutorizacao } = await operador.from("alunos").insert({ nome: "Sem autorização RLS" }).select("id").single();
+    const { error } = await operador
+      .from("alunos")
+      .update({ foto_caminho: `${crypto.randomUUID()}.jpg` })
+      .eq("id", semAutorizacao!.id);
+    expect(error).not.toBeNull();
+    await admin.from("alunos").delete().eq("id", semAutorizacao!.id);
+  });
+
   it("só aceita foto_caminho no formato <uuid>.<ext>", async () => {
     for (const caminho of ["../outra.png", "pasta/" + crypto.randomUUID() + ".png", "foto.png", ""]) {
       const { error } = await operador.from("alunos").update({ foto_caminho: caminho }).eq("id", alunoId);
