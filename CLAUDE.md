@@ -37,7 +37,7 @@ npm run test:rls            # RLS + RPCs contra o Supabase local (rode db reset 
 npm run test:e2e            # Playwright + axe em 375/768/1280 (Supabase local + db reset)
 npm run typecheck && npm run lint
 npm run db:tipos            # regenera lib/supabase/tipos-banco.ts após migração
-npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime,storage-api
+npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime
                             # Supabase local (Docker). Portas 547xx: API 54721, banco 54722
 npx supabase db reset       # recria o banco: roda migrações + supabase/seed.sql
 npx supabase migration new <descricao>   # nova migração (ver skill criar-migracao)

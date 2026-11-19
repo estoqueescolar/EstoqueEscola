@@ -77,7 +77,7 @@ cd EstoqueEscola
 npm install
 
 # 1. Banco local (Docker). Na primeira vez baixa as imagens e demora alguns minutos.
-npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime,storage-api
+npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime
 
 # 2. Variáveis de ambiente
 cp .env.example .env.local

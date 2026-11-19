@@ -12,7 +12,7 @@ Os 2 pulados são o fluxo de recuperação de senha por e-mail, que roda só na 
 
 ## Antes de rodar
 ```bash
-npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime,storage-api
+npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime
 npx supabase db reset     # banco limpo com os dados de exemplo
 npm run dev               # o Playwright usa o servidor em http://localhost:3000
 ```

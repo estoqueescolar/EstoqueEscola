@@ -10,7 +10,7 @@ onde clicar, o que dizer e o que fazer se algo der errado. Tempo estimado: **15 
 1. Abra o **Docker Desktop** e espere ele ficar "Running".
 2. No terminal, na pasta do projeto:
    ```bash
-   npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime,storage-api
+   npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime
    npx supabase db reset      # IMPORTANTE: limpa dados de testes e recria os dados de exemplo
    npm run build && npm start # versão de produção: mais rápida e sem avisos de desenvolvimento
    ```

@@ -11,7 +11,7 @@ git clone https://github.com/estoqueescolar/EstoqueEscola.git
 cd EstoqueEscola
 npm install
 
-npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime,storage-api
+npx supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime
 cp .env.example .env.local
 npx supabase status        # copie "anon key" e "service_role key" para o .env.local
 npx supabase db reset      # cria as tabelas e carrega os dados de exemplo e as 3 contas de demonstração
