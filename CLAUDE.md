@@ -115,7 +115,9 @@ Nome exibido ao usuário: **Despensa CAPE** (Centro de Apoio Pedagógico Especia
 - Toda tabela tem RLS ativo. Permissões aplicadas no banco (RLS) **e** no servidor; a interface só oculta.
 - Nome de quem registrou movimentação: coluna calculada `responsavel` (só o nome, nunca o e-mail).
   Não abra a tabela `perfis` para outros perfis.
-- Não registrar dados pessoais em logs nem em URLs. Restrições alimentares são só contagens (sem nome de aluno).
+- Não registrar dados pessoais em logs nem em URLs. Alunos com restrição (`alunos`, `alunos_restricoes`) têm nome e foto: são dado de criança e de saúde (LGPD).
+  Fotos só no bucket privado `fotos-alunos` (URL assinada e temporária, nome `<uuid>.<ext>`); nunca em URL pública, log ou `localStorage`.
+  A contagem diária (`contagem_restricoes`) continua sem identificar aluno.
 
 ## Skills do projeto (`.claude/skills/`)
 | Skill | Quando usar |

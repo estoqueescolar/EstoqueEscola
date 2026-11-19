@@ -4,6 +4,7 @@ import {
   filtrarAlunos,
   FOTO_TAMANHO_MAXIMO,
   iniciaisDoNome,
+  nivelMaisAlto,
   nomeArquivoFoto,
   ordenarRestricoes,
   resumoRestricoes,
@@ -16,8 +17,8 @@ import { esquemaAluno } from "@/lib/validacoes/alunos";
 const ID_A = "6f1e1c8e-6b3a-4c2b-9a54-2a8c7d1e0f11";
 const ID_B = "7a2f2d9f-7c4b-4d3c-8b65-3b9d8e2f1a22";
 
-const lactose = { tipo_restricao_id: ID_A, nome: "Intolerância à lactose", grave: false };
-const amendoim = { tipo_restricao_id: ID_B, nome: "Alergia a amendoim", grave: true };
+const lactose = { tipo_restricao_id: ID_A, nome: "Intolerância à lactose", nivel: "leve" as const };
+const amendoim = { tipo_restricao_id: ID_B, nome: "Alergia a amendoim", nivel: "grave" as const };
 
 function aluno(nome: string, restricoes: AlunoComRestricoes["restricoes"], turma: string | null = null): AlunoComRestricoes {
   return { id: nome, nome, turma, foto_caminho: null, observacao: null, restricoes };
@@ -26,6 +27,18 @@ function aluno(nome: string, restricoes: AlunoComRestricoes["restricoes"], turma
 const ana = aluno("Ana Beatriz Souza", [lactose], "3º ano A");
 const joao = aluno("João Pedro Lima", [amendoim, lactose], "2º ano B");
 const maria = aluno("Maria Clara Santos", [amendoim]);
+
+describe("níveis", () => {
+  const media = { tipo_restricao_id: "c", nome: "Diabetes", nivel: "media" as const };
+  it("ordena do mais grave ao mais leve", () => {
+    expect(ordenarRestricoes([lactose, media, amendoim]).map((r) => r.nivel)).toEqual(["grave", "media", "leve"]);
+  });
+  it("informa o nível mais alto do aluno", () => {
+    expect(nivelMaisAlto(joao)).toBe("grave");
+    expect(nivelMaisAlto(aluno("X", [lactose, media]))).toBe("media");
+    expect(nivelMaisAlto(aluno("Y", []))).toBeNull();
+  });
+});
 
 describe("ordenarRestricoes", () => {
   it("coloca a grave primeiro e ordena o resto pelo nome", () => {
@@ -46,8 +59,8 @@ describe("temRestricaoGrave e resumoRestricoes", () => {
   });
 
   it("descreve as restrições em texto, com a grave marcada", () => {
-    expect(resumoRestricoes(joao)).toBe("Alergia a amendoim (grave) e Intolerância à lactose");
-    expect(resumoRestricoes(ana)).toBe("Intolerância à lactose");
+    expect(resumoRestricoes(joao)).toBe("Alergia a amendoim (grave) e Intolerância à lactose (leve)");
+    expect(resumoRestricoes(ana)).toBe("Intolerância à lactose (leve)");
     expect(resumoRestricoes(aluno("Sem restrição", []))).toBe("Sem restrição cadastrada");
   });
 });
@@ -86,8 +99,8 @@ describe("agruparPorRestricao", () => {
   it("lista cada restrição com os alunos que a têm, graves primeiro e depois por nome", () => {
     const grupos = agruparPorRestricao([ana, joao, maria]);
     expect(grupos.map((g) => g.nome)).toEqual(["Alergia a amendoim", "Intolerância à lactose"]);
-    expect(grupos[0].alunos.map((a) => a.nome)).toEqual(["João Pedro Lima", "Maria Clara Santos"]);
-    expect(grupos[1].alunos.map((a) => a.nome)).toEqual(["Ana Beatriz Souza", "João Pedro Lima"]);
+    expect(grupos[0].alunos.map((a) => a.aluno.nome)).toEqual(["João Pedro Lima", "Maria Clara Santos"]);
+    expect(grupos[1].alunos.map((a) => a.aluno.nome)).toEqual(["Ana Beatriz Souza", "João Pedro Lima"]);
   });
 
   it("um aluno com duas restrições aparece nos dois grupos", () => {
@@ -134,7 +147,7 @@ describe("foto do aluno", () => {
 });
 
 describe("esquemaAluno", () => {
-  const base = { nome: "  Ana Beatriz  ", restricoes: [{ tipo_restricao_id: ID_A, grave: false }] };
+  const base = { nome: "  Ana Beatriz  ", restricoes: [{ tipo_restricao_id: ID_A, nivel: "leve" as const }] };
 
   it("aceita o mínimo e limpa os textos", () => {
     const r = esquemaAluno.parse({ ...base, turma: "", observacao: "  " });
@@ -156,11 +169,11 @@ describe("esquemaAluno", () => {
 
   it("recusa restrição repetida e id inválido", () => {
     const repetida = [
-      { tipo_restricao_id: ID_A, grave: false },
-      { tipo_restricao_id: ID_A, grave: true },
+      { tipo_restricao_id: ID_A, nivel: "leve" as const },
+      { tipo_restricao_id: ID_A, nivel: "grave" as const },
     ];
     expect(esquemaAluno.safeParse({ ...base, restricoes: repetida }).success).toBe(false);
-    expect(esquemaAluno.safeParse({ ...base, restricoes: [{ tipo_restricao_id: "abc", grave: false }] }).success).toBe(false);
+    expect(esquemaAluno.safeParse({ ...base, restricoes: [{ tipo_restricao_id: "abc", nivel: "leve" as const }] }).success).toBe(false);
   });
 
   it("limita tamanhos", () => {
@@ -169,8 +182,9 @@ describe("esquemaAluno", () => {
     expect(esquemaAluno.safeParse({ ...base, observacao: "a".repeat(501) }).success).toBe(false);
   });
 
-  it("assume restrição não grave quando não informado", () => {
+  it("assume nível leve quando não informado e recusa nível desconhecido", () => {
     const r = esquemaAluno.parse({ ...base, restricoes: [{ tipo_restricao_id: ID_A }] });
-    expect(r.restricoes[0].grave).toBe(false);
+    expect(r.restricoes[0].nivel).toBe("leve");
+    expect(esquemaAluno.safeParse({ ...base, restricoes: [{ tipo_restricao_id: ID_A, nivel: "altissimo" }] }).success).toBe(false);
   });
 });

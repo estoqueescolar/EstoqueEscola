@@ -231,15 +231,15 @@ insert into public.alunos (nome, turma, observacao, autorizacao_responsaveis) va
   ('Maria Clara Santos', '1º ano A', null, true),
   ('Lucas Gabriel Alves', '4º ano A', null, true);
 
-insert into public.alunos_restricoes (aluno_id, tipo_restricao_id, grave)
-select a.id, t.id, v.grave
+insert into public.alunos_restricoes (aluno_id, tipo_restricao_id, nivel)
+select a.id, t.id, v.nivel
 from (values
-  ('Ana Beatriz Souza', 'Intolerância à lactose', false),
-  ('João Pedro Lima', 'Alergia a amendoim', true),
-  ('Maria Clara Santos', 'Sem glúten (doença celíaca)', false),
-  ('Maria Clara Santos', 'Intolerância à lactose', false),
-  ('Lucas Gabriel Alves', 'Diabetes', false)
-) as v (aluno, restricao, grave)
+  ('Ana Beatriz Souza', 'Intolerância à lactose', 'leve'),
+  ('João Pedro Lima', 'Alergia a amendoim', 'grave'),
+  ('Maria Clara Santos', 'Sem glúten (doença celíaca)', 'media'),
+  ('Maria Clara Santos', 'Intolerância à lactose', 'leve'),
+  ('Lucas Gabriel Alves', 'Diabetes', 'media')
+) as v (aluno, restricao, nivel)
 join public.alunos a on a.nome = v.aluno
 join public.tipos_restricao t on t.nome = v.restricao;
 

@@ -39,14 +39,14 @@ export type Database = {
                   ]
                 },"alunos_restricoes": {
                   Row: {
-                    "aluno_id": string,"criado_em": string,"grave": boolean,"tipo_restricao_id": string
+                    "aluno_id": string,"criado_em": string,"nivel": string,"tipo_restricao_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "aluno_id": string,"criado_em"?: string,"grave"?: boolean,"tipo_restricao_id": string
+                    "aluno_id": string,"criado_em"?: string,"nivel"?: string,"tipo_restricao_id": string
                   }
                   Update: {
-                    "aluno_id"?: string,"criado_em"?: string,"grave"?: boolean,"tipo_restricao_id"?: string
+                    "aluno_id"?: string,"criado_em"?: string,"nivel"?: string,"tipo_restricao_id"?: string
                   }
                   Relationships: [
                     {

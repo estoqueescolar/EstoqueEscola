@@ -3,7 +3,7 @@ import { textoObrigatorio, textoOpcional } from "./comum";
 
 const restricaoDoAluno = z.object({
   tipo_restricao_id: z.uuid("Escolha uma restrição válida."),
-  grave: z.boolean().default(false),
+  nivel: z.enum(["leve", "media", "grave"], { message: "Escolha o nível: leve, média ou grave." }).default("leve"),
 });
 
 export const esquemaAluno = z.object({
@@ -19,3 +19,10 @@ export const esquemaAluno = z.object({
 });
 
 export type DadosAluno = z.input<typeof esquemaAluno>;
+
+// Nome do arquivo no bucket privado: "<uuid>.<ext>". undefined mantém a foto atual; null remove.
+export const esquemaFotoCaminho = z
+  .string()
+  .regex(/^[0-9a-f-]{36}\.(jpg|png|webp)$/, "Foto inválida.")
+  .nullable()
+  .optional();

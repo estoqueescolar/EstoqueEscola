@@ -4,6 +4,16 @@ import { expect, type Page } from "@playwright/test";
 export const SENHA_DEMO = "Senha@Local123";
 
 export async function entrar(page: Page, email: string, senha = SENHA_DEMO) {
+  // O tour de boas-vindas abre na primeira visita e cobre a tela (intercepta cliques): marca como visto.
+  await page.addInitScript(() => localStorage.setItem("cape_tour_boas_vindas_visto", "1"));
+  // O indicador do `next dev` fica fixo no canto e intercepta cliques em botões ali; não existe em produção.
+  await page.addInitScript(() => {
+    document.addEventListener("DOMContentLoaded", () => {
+      const estilo = document.createElement("style");
+      estilo.textContent = "nextjs-portal { display: none !important; }";
+      document.head.append(estilo);
+    });
+  });
   await page.goto("/login");
   // no desktop a tela de acesso também carrega a cena 3D: espera a hidratação antes de enviar
   await page.waitForLoadState("networkidle");

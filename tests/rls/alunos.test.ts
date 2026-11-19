@@ -71,9 +71,9 @@ describe("visitante sem login", () => {
 describe("perfil consulta", () => {
   it("lê alunos e as restrições de cada um", async () => {
     const { data: alunos } = await consulta.from("alunos").select("id, nome");
-    const { data: vinculos } = await consulta.from("alunos_restricoes").select("aluno_id, grave");
+    const { data: vinculos } = await consulta.from("alunos_restricoes").select("aluno_id, nivel");
     expect(alunos!.length).toBeGreaterThanOrEqual(4);
-    expect(vinculos!.some((v) => v.grave)).toBe(true);
+    expect(vinculos!.some((v) => v.nivel === "grave")).toBe(true);
   });
 
   it("não cadastra aluno", async () => {
@@ -92,13 +92,13 @@ describe("perfil consulta", () => {
   });
 
   it("não altera, insere nem exclui restrições de alunos", async () => {
-    const { data: vinculo } = await consulta.from("alunos_restricoes").select("aluno_id, tipo_restricao_id, grave").limit(1).single();
+    const { data: vinculo } = await consulta.from("alunos_restricoes").select("aluno_id, tipo_restricao_id, nivel").limit(1).single();
     const { error: erroInsercao } = await consulta
       .from("alunos_restricoes")
       .insert({ aluno_id: vinculo!.aluno_id, tipo_restricao_id: crypto.randomUUID() });
     const { data: alterados } = await consulta
       .from("alunos_restricoes")
-      .update({ grave: !vinculo!.grave })
+      .update({ nivel: vinculo!.nivel === "grave" ? "leve" : "grave" })
       .eq("aluno_id", vinculo!.aluno_id)
       .eq("tipo_restricao_id", vinculo!.tipo_restricao_id)
       .select();
@@ -138,12 +138,17 @@ describe("perfil operador", () => {
     alunoId = aluno!.id;
     const { error: erroVinculo } = await operador
       .from("alunos_restricoes")
-      .insert({ aluno_id: alunoId, tipo_restricao_id: tipoId, grave: true });
+      .insert({ aluno_id: alunoId, tipo_restricao_id: tipoId, nivel: "grave" });
     expect(erroVinculo).toBeNull();
   });
 
   it("não cria o mesmo vínculo duas vezes", async () => {
     const { error } = await operador.from("alunos_restricoes").insert({ aluno_id: alunoId, tipo_restricao_id: tipoId });
+    expect(error).not.toBeNull();
+  });
+
+  it("rejeita nível desconhecido", async () => {
+    const { error } = await operador.from("alunos_restricoes").update({ nivel: "altissimo" }).eq("aluno_id", alunoId);
     expect(error).not.toBeNull();
   });
 

@@ -1,9 +1,22 @@
 import type { Resultado } from "./tipos";
 
+// Do mais leve ao mais grave. O peso ordena listas: o mais grave aparece primeiro.
+export const NIVEIS_RESTRICAO = [
+  { valor: "leve", texto: "Leve", ajuda: "Desconforto. Evitar o alimento." },
+  { valor: "media", texto: "Média", ajuda: "Reação que exige atenção. Separar o prato." },
+  { valor: "grave", texto: "Grave", ajuda: "Risco à saúde. Nenhum contato com o alimento." },
+] as const;
+
+export type NivelRestricao = (typeof NIVEIS_RESTRICAO)[number]["valor"];
+
+const PESO: Record<NivelRestricao, number> = { leve: 1, media: 2, grave: 3 };
+
+export const textoNivel = (nivel: NivelRestricao) => NIVEIS_RESTRICAO.find((n) => n.valor === nivel)!.texto;
+
 export interface RestricaoDoAluno {
   tipo_restricao_id: string;
   nome: string;
-  grave: boolean;
+  nivel: NivelRestricao;
 }
 
 export interface AlunoComRestricoes {
@@ -15,10 +28,16 @@ export interface AlunoComRestricoes {
   restricoes: RestricaoDoAluno[];
 }
 
-export interface GrupoRestricao {
+export interface AlunoNoGrupo<T extends AlunoComRestricoes> {
+  aluno: T;
+  // nível desta restrição para este aluno
+  nivel: NivelRestricao;
+}
+
+export interface GrupoRestricao<T extends AlunoComRestricoes = AlunoComRestricoes> {
   tipo_restricao_id: string;
   nome: string;
-  alunos: AlunoComRestricoes[];
+  alunos: AlunoNoGrupo<T>[];
 }
 
 export interface FiltroAlunos {
@@ -30,7 +49,7 @@ export interface FiltroAlunos {
 const comparar = (a: string, b: string) => a.localeCompare(b, "pt-BR");
 
 // Minúsculas e sem acento, para a busca achar "joao" em "João".
-function normalizar(texto: string): string {
+export function normalizar(texto: string): string {
   return texto
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
@@ -38,24 +57,28 @@ function normalizar(texto: string): string {
     .trim();
 }
 
-// Grave primeiro (a cozinha precisa ver essa antes), depois por nome.
+// Mais grave primeiro (a cozinha precisa ver essa antes), depois por nome.
 export function ordenarRestricoes(restricoes: readonly RestricaoDoAluno[]): RestricaoDoAluno[] {
-  return [...restricoes].sort((a, b) => Number(b.grave) - Number(a.grave) || comparar(a.nome, b.nome));
+  return [...restricoes].sort((a, b) => PESO[b.nivel] - PESO[a.nivel] || comparar(a.nome, b.nome));
+}
+
+export function nivelMaisAlto(aluno: Pick<AlunoComRestricoes, "restricoes">): NivelRestricao | null {
+  return ordenarRestricoes(aluno.restricoes)[0]?.nivel ?? null;
 }
 
 export function temRestricaoGrave(aluno: Pick<AlunoComRestricoes, "restricoes">): boolean {
-  return aluno.restricoes.some((r) => r.grave);
+  return aluno.restricoes.some((r) => r.nivel === "grave");
 }
 
 // Texto corrido das restrições: leitores de tela e impressão não dependem de cor.
 export function resumoRestricoes(aluno: Pick<AlunoComRestricoes, "restricoes">): string {
-  const nomes = ordenarRestricoes(aluno.restricoes).map((r) => (r.grave ? `${r.nome} (grave)` : r.nome));
+  const nomes = ordenarRestricoes(aluno.restricoes).map((r) => `${r.nome} (${textoNivel(r.nivel).toLowerCase()})`);
   if (nomes.length === 0) return "Sem restrição cadastrada";
   if (nomes.length === 1) return nomes[0];
   return `${nomes.slice(0, -1).join(", ")} e ${nomes[nomes.length - 1]}`;
 }
 
-export function filtrarAlunos(alunos: readonly AlunoComRestricoes[], filtro: FiltroAlunos): AlunoComRestricoes[] {
+export function filtrarAlunos<T extends AlunoComRestricoes>(alunos: readonly T[], filtro: FiltroAlunos): T[] {
   const busca = normalizar(filtro.busca ?? "");
   return alunos.filter((a) => {
     if (busca && !normalizar(`${a.nome} ${a.turma ?? ""}`).includes(busca)) return false;
@@ -65,24 +88,20 @@ export function filtrarAlunos(alunos: readonly AlunoComRestricoes[], filtro: Fil
   });
 }
 
-// Visão da cozinha: cada restrição com os alunos que a têm. Quem tem reação grave vem primeiro.
-export function agruparPorRestricao(alunos: readonly AlunoComRestricoes[]): GrupoRestricao[] {
-  const grupos = new Map<string, { grupo: GrupoRestricao; graves: Set<string> }>();
+// Visão "por alergia": cada restrição com os alunos que a têm. Mais grave primeiro, depois por nome.
+export function agruparPorRestricao<T extends AlunoComRestricoes>(alunos: readonly T[]): GrupoRestricao<T>[] {
+  const grupos = new Map<string, GrupoRestricao<T>>();
   for (const aluno of alunos) {
     for (const r of aluno.restricoes) {
-      const atual = grupos.get(r.tipo_restricao_id) ?? {
-        grupo: { tipo_restricao_id: r.tipo_restricao_id, nome: r.nome, alunos: [] },
-        graves: new Set<string>(),
-      };
-      atual.grupo.alunos.push(aluno);
-      if (r.grave) atual.graves.add(aluno.id);
-      grupos.set(r.tipo_restricao_id, atual);
+      const grupo = grupos.get(r.tipo_restricao_id) ?? { tipo_restricao_id: r.tipo_restricao_id, nome: r.nome, alunos: [] };
+      grupo.alunos.push({ aluno, nivel: r.nivel });
+      grupos.set(r.tipo_restricao_id, grupo);
     }
   }
   return [...grupos.values()]
-    .map(({ grupo, graves }) => ({
-      ...grupo,
-      alunos: [...grupo.alunos].sort((a, b) => Number(graves.has(b.id)) - Number(graves.has(a.id)) || comparar(a.nome, b.nome)),
+    .map((g) => ({
+      ...g,
+      alunos: [...g.alunos].sort((a, b) => PESO[b.nivel] - PESO[a.nivel] || comparar(a.aluno.nome, b.aluno.nome)),
     }))
     .sort((a, b) => comparar(a.nome, b.nome));
 }
