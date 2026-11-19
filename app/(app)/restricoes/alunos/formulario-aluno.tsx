@@ -7,6 +7,7 @@ import { CameraIcon, ImageIcon, Loader2Icon, PlusIcon, SearchIcon, Trash2Icon, T
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
+import { CapturaWebcam } from "@/components/alunos/CapturaWebcam";
 import { FotoAluno } from "@/components/alunos/FotoAluno";
 import { SeletorNivel } from "@/components/alunos/SeletorNivel";
 import { AvisoFormulario } from "@/components/comum/AvisoFormulario";
@@ -128,7 +129,7 @@ export function FormularioAluno({ tipos: tiposIniciais, aluno, podeExcluir }: Pr
     alterarRestricoes(restricoes.map((r) => (r.tipo_restricao_id === id ? { ...r, nivel } : r)));
   }
 
-  async function aoEscolherFoto(arquivo: File | undefined) {
+  async function aoEscolherFoto(arquivo: Blob | undefined) {
     if (!arquivo) return;
     setErroFoto(null);
     setPreparandoFoto(true);
@@ -271,6 +272,7 @@ export function FormularioAluno({ tipos: tiposIniciais, aluno, podeExcluir }: Pr
                 </Botao>
               )}
             </div>
+            <CapturaWebcam desabilitado={preparandoFoto || !autorizado} aoCapturar={(foto) => void aoEscolherFoto(foto)} />
             {!autorizado && (
               <p className="text-center text-sm text-muted-foreground">Para adicionar a foto, marque a autorização no passo 1.</p>
             )}

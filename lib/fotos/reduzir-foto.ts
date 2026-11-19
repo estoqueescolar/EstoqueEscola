@@ -6,7 +6,7 @@ const QUALIDADE_JPEG = 0.85;
 export class ErroFoto extends Error {}
 
 // Reduz e converte para JPEG, respeitando a orientação do aparelho. Lança Error com mensagem para o usuário.
-export async function reduzirFoto(arquivo: File): Promise<Blob> {
+export async function reduzirFoto(arquivo: Blob): Promise<Blob> {
   let imagem: ImageBitmap;
   try {
     imagem = await createImageBitmap(arquivo, { imageOrientation: "from-image" });
