@@ -110,3 +110,23 @@ test("administrador cria alergia no cadastro, associa com nível grave e depois 
   await page.getByRole("alertdialog").getByRole("button", { name: "Excluir" }).click();
   await expect(page.getByText(nomeAlergia)).toHaveCount(0);
 });
+
+test("consulta abre a lista para imprimir, com a seção de reação grave primeiro", async ({ page }) => {
+  await entrar(page, "consulta@colegio.local");
+  await expect(page).toHaveURL(/\/painel/);
+  await page.goto("/restricoes/alunos");
+  await page.getByRole("link", { name: "Imprimir lista" }).click();
+  await expect(page).toHaveURL(/\/imprimir\/alunos$/, { timeout: 60000 });
+  await expect(page.getByRole("heading", { name: "Alunos com restrição alimentar", level: 1 })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Imprimir" })).toBeVisible();
+
+  const graves = page.getByRole("region", { name: /reação grave/ });
+  await expect(graves.getByText("João Pedro Lima")).toBeVisible();
+  await expect(graves.getByText("Ana Beatriz Souza")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: /Intolerância à lactose/, level: 2 })).toBeVisible();
+  await verificarTela(page);
+
+  // na folha impressa, botões e links de navegação somem
+  await page.emulateMedia({ media: "print" });
+  await expect(page.getByRole("button", { name: "Imprimir" })).toBeHidden();
+});

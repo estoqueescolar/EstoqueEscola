@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LayoutGridIcon, PlusIcon, SearchIcon, ShieldAlertIcon, TriangleAlertIcon, UsersIcon } from "lucide-react";
+import { LayoutGridIcon, PlusIcon, PrinterIcon, SearchIcon, ShieldAlertIcon, TriangleAlertIcon, UsersIcon } from "lucide-react";
 import { AbasRestricoes } from "@/components/alunos/AbasRestricoes";
 import { CartaoAluno } from "@/components/alunos/CartaoAluno";
 import { GuiaCadastro } from "@/components/alunos/GuiaCadastro";
@@ -58,11 +58,18 @@ export default async function PaginaAlunos({ searchParams }: PageProps<"/restric
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Restrições alimentares</h1>
             <p className="mt-1 text-muted-foreground">Quem tem cada alergia, com foto, para preparar e servir com segurança.</p>
           </div>
-          {podeEditar && (
-            <LinkBotao href="/restricoes/alunos/novo" principal>
-              <PlusIcon className="size-5" aria-hidden="true" /> Cadastrar aluno
-            </LinkBotao>
-          )}
+          <div className="flex flex-col gap-2 sm:flex-row">
+            {alunos.length > 0 && (
+              <LinkBotao href="/imprimir/alunos">
+                <PrinterIcon className="size-5" aria-hidden="true" /> Imprimir lista
+              </LinkBotao>
+            )}
+            {podeEditar && (
+              <LinkBotao href="/restricoes/alunos/novo" principal>
+                <PlusIcon className="size-5" aria-hidden="true" /> Cadastrar aluno
+              </LinkBotao>
+            )}
+          </div>
         </div>
         <AbasRestricoes atual="/restricoes/alunos" />
       </header>
