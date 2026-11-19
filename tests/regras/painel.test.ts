@@ -55,6 +55,18 @@ describe("textoListaCompras", () => {
   it("avisa quando não há nada para comprar", () => {
     expect(textoListaCompras([], "03/11/2026")).toContain("nada abaixo do mínimo");
   });
+
+  it("inclui os itens extras depois dos produtos com estoque baixo", () => {
+    const texto = textoListaCompras([item({})], "03/11/2026", [
+      { nome: "Papel-toalha", quantidade: "2", unidade: "pacotes" },
+      { nome: "Fermento", quantidade: "1", unidade: "" },
+    ]);
+    expect(texto).toBe("Lista de compras (03/11/2026)\n- Arroz branco: 6 kg\n- Papel-toalha: 2 pacotes\n- Fermento: 1");
+  });
+
+  it("lista só os extras quando nada está abaixo do mínimo", () => {
+    expect(textoListaCompras([], "03/11/2026", [{ nome: "Sal", quantidade: "1", unidade: "kg" }])).toBe("Lista de compras (03/11/2026)\n- Sal: 1 kg");
+  });
 });
 
 describe("esquemaConfiguracoes", () => {

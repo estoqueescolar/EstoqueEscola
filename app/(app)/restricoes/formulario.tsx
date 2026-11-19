@@ -81,7 +81,7 @@ export function FormularioContagens({ data, tipos, valores }: Props) {
             >
               {r.texto}
               {total > 0 && (
-                <span className={cn("rounded-full px-1.5 py-0.5 text-xs", aba === r.valor ? "bg-primary-foreground/20" : "bg-primary/10 text-primary")}>
+                <span className={cn("rounded-full px-2 text-sm tabular-nums", aba === r.valor ? "bg-card text-foreground" : "bg-ok-fundo text-foreground")}>
                   {total}
                 </span>
               )}
@@ -94,14 +94,20 @@ export function FormularioContagens({ data, tipos, valores }: Props) {
       <div role="tabpanel" className="flex flex-col gap-4 rounded-xl border bg-card p-4 sm:p-6">
         {aviso && <AvisoFormulario tipo={aviso.tipo === "ok" ? "sucesso" : "erro"}>{aviso.texto}</AvisoFormulario>}
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        {/* Uma linha por restrição: nome e descrição à esquerda, número à direita (sempre alinhados). */}
+        <ul className="-mx-4 divide-y border-y sm:-mx-6">
           {tipos.map((tipo) => {
             const valor = inputs[aba]?.[tipo.id] ?? "0";
             const erroKey = `contagens.${tipos.indexOf(tipo)}.quantidade_alunos`;
+            const idDescricao = tipo.descricao ? `${aba}-${tipo.id}-descricao` : undefined;
+            const idErro = erros[erroKey] ? `${aba}-${tipo.id}-erro` : undefined;
             return (
-              <div key={tipo.id} className="flex flex-col gap-1.5">
-                <label htmlFor={`${aba}-${tipo.id}`} className="text-sm font-medium">{tipo.nome}</label>
-                {tipo.descricao && <p className="text-xs text-muted-foreground">{tipo.descricao}</p>}
+              <li key={tipo.id} className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
+                <div className="min-w-0">
+                  <label htmlFor={`${aba}-${tipo.id}`} className="font-medium">{tipo.nome}</label>
+                  {tipo.descricao && <p id={idDescricao} className="text-sm text-muted-foreground">{tipo.descricao}</p>}
+                  {erros[erroKey] && <p id={idErro} className="text-sm font-medium text-destructive">{erros[erroKey]}</p>}
+                </div>
                 <input
                   id={`${aba}-${tipo.id}`}
                   inputMode="numeric"
@@ -112,16 +118,17 @@ export function FormularioContagens({ data, tipos, valores }: Props) {
                       [aba]: { ...prev[aba], [tipo.id]: e.target.value },
                     }))
                   }
+                  aria-describedby={[idDescricao, idErro].filter(Boolean).join(" ") || undefined}
+                  aria-invalid={erros[erroKey] ? true : undefined}
                   className={cn(
-                    "min-h-11 rounded-lg border px-3 text-base focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary",
+                    "h-11 w-20 shrink-0 rounded-lg border bg-card px-3 text-right text-base tabular-nums",
                     erros[erroKey] ? "border-destructive" : "border-input",
                   )}
                 />
-                {erros[erroKey] && <p className="text-xs text-destructive">{erros[erroKey]}</p>}
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
 
         <p className="text-sm text-muted-foreground" aria-live="polite">
           Total nesta refeição:{" "}

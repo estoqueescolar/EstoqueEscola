@@ -17,6 +17,8 @@ erDiagram
     lotes ||--o{ movimentacoes : "movimenta"
     produtos ||--o{ movimentacoes : "de"
     tipos_restricao ||--o{ contagem_restricoes : "contada em"
+    alunos ||--o{ alunos_restricoes : "tem"
+    tipos_restricao ||--o{ alunos_restricoes : "classifica"
 
     perfis {
         uuid id PK "= auth.users.id"
@@ -71,6 +73,20 @@ erDiagram
         date data
         uuid tipo_restricao_id FK
         integer quantidade_alunos "só contagem, sem nomes"
+    }
+    alunos {
+        uuid id PK
+        text nome
+        text turma
+        text foto_caminho "bucket privado fotos-alunos"
+        text observacao
+        boolean autorizacao_responsaveis
+        boolean ativo
+    }
+    alunos_restricoes {
+        uuid aluno_id PK,FK
+        uuid tipo_restricao_id PK,FK
+        boolean grave
     }
     configuracoes {
         uuid id PK

@@ -41,7 +41,7 @@ Mostra a semana (segunda a sexta) com as 4 refeições. **Semana anterior** / **
 Refeição em branco fica "Não planejado". Só a direção apaga uma refeição já salva.
 
 ## Restrições alimentares
-Quantos alunos têm cada restrição no dia (só números, **nunca nomes**). Digite as quantidades e toque **Salvar contagem**.
+Quantos alunos têm cada restrição no dia (a contagem é só de números). Digite as quantidades e toque **Salvar contagem**. Para ver **quais alunos** têm cada restrição, com nome e foto, toque em **Ver quais alunos têm cada restrição**; quem tem permissão cadastra e edita os alunos ali, e pode criar uma restrição nova em **Adicionar restrição**. Para fixar na parede da cozinha, toque em **Imprimir lista**: a folha mostra primeiro quem tem reação grave e depois cada alergia com as fotos (no navegador, escolha a impressora ou "Salvar como PDF").
 Os tipos de restrição ficam em **Cadastros → Tipos de restrição alimentar**.
 
 ## Relatórios

@@ -20,11 +20,12 @@ test("painel mostra indicadores e alertas do seed, com atalhos para as telas", a
   await expect(page).toHaveURL(/\/lotes\?situacao=vencidos/);
 });
 
-test("lista de compras mostra o que falta e permite copiar", async ({ page, context, browserName }) => {
+test("lista de compras mostra o que falta, copia o texto e exporta em PDF e Excel", async ({ page, context, browserName }) => {
   await entrarComo(page, "consulta@colegio.local");
   await page.goto("/compras");
   await expect(page.getByRole("heading", { name: "Lista de compras" })).toBeVisible();
-  await expect(page.getByRole("status").filter({ hasText: /para comprar/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Estoque baixo" })).toBeVisible();
+  await expect(page.getByText(/^\d+ produtos?$/)).toBeVisible();
   await expect(page.getByRole("main").getByText(/^Comprar/).first()).toBeVisible();
   await verificarTela(page);
 
@@ -33,6 +34,14 @@ test("lista de compras mostra o que falta e permite copiar", async ({ page, cont
     await page.getByRole("button", { name: "Copiar lista" }).click();
     await expect(page.getByRole("button", { name: "Lista copiada" })).toBeVisible();
     expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(/^Lista de compras \(/);
+  }
+
+  // os dois arquivos baixam de verdade (assinatura do formato no início do arquivo)
+  for (const [nome, formato, inicio] of [["PDF", "pdf", "%PDF"], ["Excel", "xlsx", "PK"]] as const) {
+    await expect(page.getByRole("link", { name: nome, exact: true })).toHaveAttribute("href", `/api/lista-compras?formato=${formato}`);
+    const resposta = await page.request.get(`/api/lista-compras?formato=${formato}`);
+    expect(resposta.ok()).toBe(true);
+    expect((await resposta.body()).subarray(0, inicio.length).toString()).toBe(inicio);
   }
 });
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeftIcon, ChevronRightIcon, PrinterIcon, ShieldCheckIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, PrinterIcon } from "lucide-react";
+import { AbasRestricoes } from "@/components/alunos/AbasRestricoes";
 import { AvisoFormulario } from "@/components/comum/AvisoFormulario";
 import { CabecalhoPagina } from "@/components/comum/CabecalhoPagina";
 import { obterUsuarioAtual, pode } from "@/lib/permissoes";
@@ -74,15 +75,13 @@ export default async function PaginaRestricoes({ searchParams }: PageProps<"/res
 
   return (
     <div className="flex flex-col gap-6">
-      <CabecalhoPagina
-        titulo="Restrições alimentares"
-        descricao="Quantos alunos têm cada restrição em cada refeição, para preparar os pratos especiais."
-      />
-
-      <p className="flex items-start gap-2 rounded-lg bg-ok-fundo p-3 text-sm">
-        <ShieldCheckIcon className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-        Registramos só a quantidade de alunos, nunca nomes ou dados que identifiquem um aluno.
-      </p>
+      <header className="flex flex-col gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Restrições alimentares</h1>
+          <p className="mt-1 text-muted-foreground">Quantos alunos com cada restrição comem em cada refeição, para preparar os pratos especiais.</p>
+        </div>
+        <AbasRestricoes atual="/restricoes" />
+      </header>
 
       <nav aria-label="Trocar de dia" className="flex flex-wrap items-center gap-2">
         <Link href={`/restricoes?data=${somarDias(data, -1)}`} className={linkNavegacao}>
@@ -160,10 +159,10 @@ export default async function PaginaRestricoes({ searchParams }: PageProps<"/res
                         {r.texto}
                         <span className="ml-2 text-sm font-normal text-muted-foreground">{total} aluno{total !== 1 ? "s" : ""}</span>
                       </h3>
-                      <ul className="grid gap-2 sm:grid-cols-2">
+                      <ul className="divide-y rounded-xl border bg-card">
                         {listaTipos.map((t) => (
-                          <li key={t.id} className="flex items-center justify-between rounded-xl border bg-card p-4">
-                            <span className="text-sm">{t.nome}</span>
+                          <li key={t.id} className="flex min-h-12 items-center justify-between gap-4 px-4 py-2">
+                            <span>{t.nome}</span>
                             <span className="font-semibold tabular-nums">{valoresPorRefeicao[r.valor]?.[t.id] ?? 0}</span>
                           </li>
                         ))}
