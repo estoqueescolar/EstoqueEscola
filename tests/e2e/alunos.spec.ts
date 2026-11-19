@@ -45,6 +45,13 @@ test("contagem do dia fica na outra aba, com as linhas alinhadas", async ({ page
   const posicoes = await caixas.evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().left)));
   expect(posicoes.length).toBeGreaterThan(1);
   expect(new Set(posicoes).size).toBe(1);
+
+  // salvar a contagem funciona (regressão: o banco recusava o upsert por causa de um índice parcial)
+  await page.waitForLoadState("networkidle");
+  await caixas.first().fill("2");
+  await page.getByRole("button", { name: /^Salvar / }).click();
+  await expect(page.getByText(/Contagem salva/)).toBeVisible();
+  await expect(page.getByText(/Não foi possível concluir/)).toHaveCount(0);
 });
 
 test("consulta é mandada de volta ao tentar abrir o cadastro", async ({ page }) => {
