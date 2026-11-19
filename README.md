@@ -158,7 +158,7 @@ Decisões não descritas no enunciado; em todas escolhemos a opção mais simple
 | Testes de navegador com `@playwright/test` + `@axe-core/playwright` | Cobrem o fluxo real e a acessibilidade (axe) nas três larguras exigidas. |
 | Nome exibido **Despensa CAPE** (Centro de Apoio Pedagógico Especializado) | O sistema é entregue ao CAPE; o nome técnico do repositório continua `EstoqueEscolar`. |
 | Prazo do alerta de validade editável só pela direção, de 1 a 60 dias (tela Configurações) | O enunciado pede "7 dias (configurável)"; 60 dias evita que o alerta perca o sentido. |
-| Lista de compras com botão **Copiar lista** (texto simples) | A compra costuma ser pedida por WhatsApp; o PDF/XLSX entra na etapa de relatórios. |
+| Lista de compras com botão **Copiar lista** (texto simples, com os itens extras ainda não comprados), ao lado de **PDF** e **Excel** | A compra costuma ser pedida por WhatsApp; o texto cola direto na conversa, e os arquivos servem para guardar ou imprimir. |
 | Produtos inativos ficam fora da lista de compras | Produto desativado não é mais comprado. |
 | Demonstração 3D no login carregada sob demanda e só em telas grandes | Mostra o funcionamento da despensa sem atrasar o formulário nem gastar dados no celular; pausa automática para quem pede menos movimento. |
 | Funções ainda não prontas aparecem no menu com cadeado (usado até a etapa 7) | Mostra o escopo completo sem levar a telas vazias. |

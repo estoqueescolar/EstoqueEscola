@@ -29,11 +29,23 @@ export function calcularIndicadores(
   };
 }
 
+export interface ItemExtraCompra {
+  nome: string;
+  quantidade: string;
+  unidade: string;
+}
+
 // Texto da lista de compras para colar no WhatsApp ou e-mail do fornecedor.
-export function textoListaCompras(itens: readonly ItemListaCompras[], dataFormatada: string): string {
-  if (!itens.length) return `Lista de compras (${dataFormatada}): nada abaixo do mínimo.`;
+// Extras = itens adicionados à mão ainda não comprados (passe só os pendentes).
+export function textoListaCompras(
+  itens: readonly ItemListaCompras[],
+  dataFormatada: string,
+  extras: readonly ItemExtraCompra[] = [],
+): string {
+  if (!itens.length && !extras.length) return `Lista de compras (${dataFormatada}): nada abaixo do mínimo.`;
   const linhas = itens.map(
     (i) => `- ${i.nome}: ${formatarQuantidade(i.quantidade_a_comprar, i.sigla_unidade)}${i.fornecedor ? ` (${i.fornecedor})` : ""}`,
   );
-  return [`Lista de compras (${dataFormatada})`, ...linhas].join("\n");
+  const linhasExtras = extras.map((e) => `- ${e.nome}: ${[e.quantidade.trim(), e.unidade.trim()].filter(Boolean).join(" ")}`);
+  return [`Lista de compras (${dataFormatada})`, ...linhas, ...linhasExtras].join("\n");
 }

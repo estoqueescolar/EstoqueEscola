@@ -5,8 +5,11 @@ import { CabecalhoPagina } from "@/components/comum/CabecalhoPagina";
 import { IndicadorEstoque } from "@/components/estoque/IndicadorEstoque";
 import { carregarSituacaoEstoque } from "@/lib/dados/painel";
 import { obterUsuarioAtual, pode } from "@/lib/permissoes";
+import { formatarData, hojeNoColegio } from "@/lib/regras/datas";
+import { textoListaCompras } from "@/lib/regras/painel";
 import { formatarQuantidade } from "@/lib/regras/quantidades";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
+import { CopiarLista } from "./copiar-lista";
 import { ExportarLista } from "./exportar";
 import { ItensExtras } from "./itens-extras";
 
@@ -21,6 +24,8 @@ export default async function PaginaCompras() {
   ]);
 
   const podeEditar = pode(usuario?.perfil, "movimentar");
+  const pendentes = (extras ?? []).filter((i) => !i.comprado);
+  const textoCopia = textoListaCompras(listaCompras, formatarData(hojeNoColegio()), pendentes);
   const totalItens = listaCompras.length + (extras?.filter((i) => !i.comprado).length ?? 0);
 
   return (
@@ -28,7 +33,12 @@ export default async function PaginaCompras() {
       <CabecalhoPagina
         titulo="Lista de compras"
         descricao="Produtos com estoque abaixo do mínimo e itens extras adicionados manualmente."
-        acoes={<ExportarLista />}
+        acoes={
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+            <CopiarLista texto={textoCopia} />
+            <ExportarLista />
+          </div>
+        }
       />
 
       {/* Estoque baixo — automático */}
