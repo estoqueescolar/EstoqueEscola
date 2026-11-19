@@ -6,7 +6,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: [["list"]],
-  timeout: 60000,
+  timeout: 120000, // `next dev` compila cada rota na primeira visita
   expect: { timeout: 15000 },
   use: { baseURL: "http://localhost:3000", trace: "retain-on-failure" },
   projects: [

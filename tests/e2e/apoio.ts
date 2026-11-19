@@ -4,8 +4,14 @@ import { expect, type Page } from "@playwright/test";
 export const SENHA_DEMO = "Senha@Local123";
 
 export async function entrar(page: Page, email: string, senha = SENHA_DEMO) {
-  // O tour de boas-vindas abre na primeira visita e cobre a tela (intercepta cliques): marca como visto.
-  await page.addInitScript(() => localStorage.setItem("cape_tour_boas_vindas_visto", "1"));
+  // Os tours guiados (boas-vindas e um por tela) abrem na primeira visita e cobrem a tela,
+  // interceptando cliques: nos testes, todos contam como já vistos.
+  await page.addInitScript(() => {
+    const original = Storage.prototype.getItem;
+    Storage.prototype.getItem = function (chave: string) {
+      return chave.startsWith("cape_tour_") ? "1" : original.call(this, chave);
+    };
+  });
   // O indicador do `next dev` fica fixo no canto e intercepta cliques em botões ali; não existe em produção.
   await page.addInitScript(() => {
     document.addEventListener("DOMContentLoaded", () => {
@@ -20,6 +26,8 @@ export async function entrar(page: Page, email: string, senha = SENHA_DEMO) {
   await page.getByLabel("E-mail").fill(email);
   await page.getByLabel(/^Senha/).fill(senha);
   await page.getByRole("button", { name: "Entrar" }).click();
+  // no `next dev` o login pode passar de 15 s (cena 3D + primeira compilação): espera o envio terminar
+  await expect(page.getByRole("button", { name: /Entrando/ })).toHaveCount(0, { timeout: 60000 });
 }
 
 // Sem rolagem horizontal da página e sem violações graves de acessibilidade (axe).
