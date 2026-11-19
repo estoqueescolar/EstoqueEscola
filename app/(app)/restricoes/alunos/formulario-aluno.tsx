@@ -327,7 +327,7 @@ export function FormularioAluno({ tipos: tiposIniciais, aluno, podeExcluir }: Pr
             <p className="text-sm">
               {tiposVisiveis.length === 0 ? "Nenhuma alergia com esse nome." : "Não é nenhuma dessas?"} Crie e ela já fica marcada para este aluno.
             </p>
-            <Botao type="button" onClick={criarAlergia} carregando={criando} textoCarregando="Criando…" className="shrink-0">
+            <Botao type="button" onClick={criarAlergia} carregando={criando} textoCarregando="Criando…" className="h-auto min-w-0 whitespace-normal py-2 text-left wrap-break-word sm:max-w-xs">
               <PlusIcon className="size-5" aria-hidden="true" /> Criar “{buscaAlergia.trim()}”
             </Botao>
           </div>

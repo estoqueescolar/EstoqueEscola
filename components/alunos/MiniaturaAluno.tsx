@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { NivelRestricao } from "@/lib/regras/alunos";
+import { textoNivel, type NivelRestricao } from "@/lib/regras/alunos";
 import type { AlunoListado } from "@/lib/dados/alunos";
 import { cn } from "@/lib/utils";
 import { EtiquetaRestricao } from "./EtiquetaRestricao";
@@ -28,7 +28,7 @@ export function MiniaturaAluno({ aluno, nivel, podeEditar }: Props) {
   return (
     <li>
       {podeEditar ? (
-        <Link href={`/restricoes/alunos/${aluno.id}/editar`} aria-label={`${aluno.nome}, nível ${nivel === "media" ? "média" : nivel}. Editar`} className={cn(classe, "hover:bg-accent")}>
+        <Link href={`/restricoes/alunos/${aluno.id}/editar`} aria-label={`${aluno.nome}${aluno.turma ? `, ${aluno.turma}` : ""}, nível ${textoNivel(nivel).toLowerCase()}. Editar`} className={cn(classe, "hover:bg-accent")}>
           {conteudo}
         </Link>
       ) : (

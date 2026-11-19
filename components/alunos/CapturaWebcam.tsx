@@ -31,8 +31,11 @@ export function CapturaWebcam({ desabilitado, aoCapturar }: Props) {
   const [aberta, setAberta] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  // só captura depois que o vídeo mostra a primeira imagem
+  const [pronta, setPronta] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
   const fluxo = useRef<MediaStream | null>(null);
+  const montado = useRef(true);
 
   function parar() {
     fluxo.current?.getTracks().forEach((t) => t.stop());
@@ -40,13 +43,24 @@ export function CapturaWebcam({ desabilitado, aoCapturar }: Props) {
   }
 
   // Desliga a câmera ao sair da tela (a luz da webcam não pode ficar acesa).
-  useEffect(() => parar, []);
+  useEffect(() => {
+    montado.current = true;
+    return () => {
+      montado.current = false;
+      parar();
+    };
+  }, []);
 
   async function abrir() {
     setErro(null);
     setCarregando(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+      // A tela pode ter fechado enquanto o navegador pedia permissão: desliga a câmera na hora.
+      if (!montado.current) {
+        stream.getTracks().forEach((t) => t.stop());
+        return;
+      }
       fluxo.current = stream;
       setAberta(true);
       requestAnimationFrame(() => {
@@ -65,6 +79,7 @@ export function CapturaWebcam({ desabilitado, aoCapturar }: Props) {
   function fechar() {
     parar();
     setAberta(false);
+    setPronta(false);
   }
 
   function capturar() {
@@ -96,10 +111,10 @@ export function CapturaWebcam({ desabilitado, aoCapturar }: Props) {
       {aberta && (
         <div role="group" aria-label="Câmera do computador" className="flex flex-col gap-2">
           {/* Espelhado na tela (como um espelho); a foto salva sai na orientação real. */}
-          <video ref={video} muted playsInline aria-label="Imagem ao vivo da webcam" className="aspect-[4/3] w-full -scale-x-100 rounded-xl bg-muted object-cover" />
+          <video ref={video} muted playsInline onPlaying={() => setPronta(true)} aria-label="Imagem ao vivo da webcam" className="aspect-[4/3] w-full -scale-x-100 rounded-xl bg-muted object-cover" />
           <p className="text-sm text-muted-foreground">Centralize o rosto e clique em “Capturar foto”.</p>
-          <Botao type="button" onClick={capturar}>
-            <CameraIcon className="size-5" aria-hidden="true" /> Capturar foto
+          <Botao type="button" onClick={capturar} disabled={!pronta}>
+            <CameraIcon className="size-5" aria-hidden="true" /> {pronta ? "Capturar foto" : "Aguardando a câmera…"}
           </Botao>
           <Botao type="button" variant="ghost" onClick={fechar}>
             Cancelar

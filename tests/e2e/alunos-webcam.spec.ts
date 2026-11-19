@@ -24,6 +24,7 @@ test("diretora tira a foto pela webcam e ela aparece no cartão", async ({ page 
 
   await page.getByRole("button", { name: "Usar webcam" }).click();
   await expect(page.getByLabel("Imagem ao vivo da webcam")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Capturar foto" })).toBeEnabled();
   await page.getByRole("button", { name: "Capturar foto" }).click();
   await expect(page.getByRole("img", { name: `Foto de ${nomeAluno}` })).toBeVisible();
 
@@ -36,6 +37,16 @@ test("diretora tira a foto pela webcam e ela aparece no cartão", async ({ page 
   await expect(foto).toBeVisible();
   await expect(foto).toHaveAttribute("src", /\/storage\/v1\/object\/sign\/fotos-alunos\/.+token=/);
   expect(await foto.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+
+  // revogar a autorização apaga a foto (LGPD)
+  await page.getByRole("link", { name: `Editar ${nomeAluno}` }).click();
+  await expect(page).toHaveURL(/\/editar$/, { timeout: 60000 });
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel(/A família autorizou/).uncheck();
+  await expect(page.getByText("Sem autorização, a foto será apagada ao salvar.")).toBeVisible();
+  await page.getByRole("button", { name: "Salvar alterações" }).click();
+  await expect(page).toHaveURL(/\/restricoes\/alunos$/);
+  await expect(page.getByRole("listitem", { name: nomeAluno }).getByRole("img", { name: `${nomeAluno}, sem foto` })).toBeVisible();
 
   // limpeza
   await page.getByRole("link", { name: `Editar ${nomeAluno}` }).click();

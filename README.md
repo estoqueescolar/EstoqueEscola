@@ -134,7 +134,9 @@ docs/              documentação
 - A chave de serviço do Supabase (`SUPABASE_SERVICE_ROLE_KEY`) **só existe no servidor**; nunca vai para o navegador.
 - Nenhum segredo no repositório: `.env.local` é ignorado pelo Git; os nomes das variáveis estão em `.env.example`.
 - Toda tabela tem RLS. Lotes e movimentações só mudam por funções transacionais no banco.
-- Restrições alimentares são só **contagens** (nenhum nome de aluno).
+- Alunos com restrição têm nome e foto (dado de criança e de saúde, LGPD): leitura só para usuários ativos,
+  cadastro por administrador e operador, fotos em bucket **privado** com URL assinada de 1 hora.
+  Foto só com a autorização da família registrada (regra no banco). A contagem diária continua sem nomes.
 
 ## Decisões
 Decisões não descritas no enunciado; em todas escolhemos a opção mais simples que atende ao requisito.
@@ -164,3 +166,10 @@ Decisões não descritas no enunciado; em todas escolhemos a opção mais simple
 | Relatórios por formulário GET simples, com erro voltando para a tela | Funciona sem JavaScript e baixa direto; período limitado a 1 ano e a 1000 movimentações por arquivo. |
 | Cardápio de segunda a sexta | Dias letivos; sábado e domingo abrem a semana seguinte. |
 | E-mails de produção pelo Gmail (escolarestoque@gmail.com) com senha de app | Gratuito; a senha de app fica só no painel do Supabase. |
+| Nome e foto dos alunos com restrição, visíveis a todos os perfis ativos | Pedido da escola: a cozinha precisa reconhecer o rosto da criança; nome só não basta. |
+| Foto bloqueada sem autorização da família (constraint no banco) | LGPD, art. 14: dado de criança exige consentimento dos responsáveis. O documento fica com a direção; o sistema só registra que existe. |
+| Foto reduzida no aparelho (~800 px, JPEG) e enviada direto ao bucket privado | Foto de celular passa de 4 MB; a server action tem limite de corpo e 800 px bastam para reconhecer o rosto. |
+| Níveis **leve / média / grave** por restrição de cada aluno | Pedido da escola; a grave aparece em destaque na tela e no topo da folha impressa. |
+| Alergia nova criada dentro do cadastro do aluno | Deixa claro o fluxo "a alergia precisa existir para ser associada", sem sair da tela. |
+| Webcam só em computador; no celular, câmera nativa (traseira) | O navegador do celular já abre a câmera pelo campo de arquivo; a webcam exige permissão e só funciona em HTTPS. |
+| Lista da cozinha como **página de impressão** (A4) em vez de PDF gerado | Fotos com boa qualidade sem baixar imagens no servidor; "Salvar como PDF" do navegador atende quem quer o arquivo. |

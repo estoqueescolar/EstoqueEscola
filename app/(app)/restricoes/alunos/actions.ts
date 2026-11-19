@@ -52,7 +52,9 @@ export async function salvarAluno(
       if (erroLeitura) return falha(erroLeitura);
       if (!atual) return { ok: false, mensagem: "Aluno não encontrado. Ele pode ter sido excluído." };
       fotoAntiga = atual.foto_caminho;
-      const { error } = await supabase.from("alunos").update(campos).eq("id", id).eq("ativo", true);
+      // Revogar a autorização apaga a foto no MESMO comando (o banco recusa autorização falsa com foto).
+      const alteracao = campos.autorizacao_responsaveis ? campos : { ...campos, foto_caminho: null };
+      const { error } = await supabase.from("alunos").update(alteracao).eq("id", id).eq("ativo", true);
       if (error) return falha(error);
     }
     if (alunoId === null) return falha(null);
@@ -76,15 +78,16 @@ export async function salvarAluno(
 
     // A foto é o último passo: se algo antes falhar, nenhum aluno aponta para o arquivo enviado
     // e o navegador pode apagá-lo com segurança. O índice único impede dois alunos com o mesmo arquivo.
-    // Sem autorização, a foto atual é apagada (o banco também recusa foto sem autorização).
-    const fotoFinal = !campos.autorizacao_responsaveis && fotoAntiga ? null : foto.data;
-    if (fotoFinal !== undefined) {
+    // Sem autorização, a foto já foi zerada no update acima; só falta apagar o arquivo.
+    const semAutorizacao = !campos.autorizacao_responsaveis;
+    const fotoFinal = semAutorizacao ? (fotoAntiga ? null : undefined) : foto.data;
+    if (fotoFinal !== undefined && !semAutorizacao) {
       const { error: erroFoto } = await supabase.from("alunos").update({ foto_caminho: fotoFinal }).eq("id", alunoId);
       if (erroFoto?.code === "23505") return { ok: false, mensagem: "Essa foto já pertence a outro aluno. Tire ou escolha outra foto." };
       if (erroFoto) return falha(erroFoto);
-      // Arquivo antigo: falha ao apagar não impede o salvamento (fica órfão no bucket).
-      if (fotoAntiga && fotoFinal !== fotoAntiga) await supabase.storage.from(BUCKET).remove([fotoAntiga]);
     }
+    // Arquivo antigo: falha ao apagar não impede o salvamento (fica órfão no bucket).
+    if (fotoAntiga && fotoFinal !== undefined && fotoFinal !== fotoAntiga) await supabase.storage.from(BUCKET).remove([fotoAntiga]);
 
     atualizarTelas();
     return { ok: true, dados: { id: alunoId }, mensagem: id === null ? "Aluno cadastrado." : "Aluno atualizado." };
@@ -98,7 +101,8 @@ export async function excluirAluno(id: string): Promise<ResultadoAcao> {
     await exigirPermissao("excluirCadastro");
     if (!esquemaId.safeParse(id).success) return { ok: false, mensagem: "Aluno inválido." };
     const supabase = await criarClienteServidor();
-    const { data: aluno } = await supabase.from("alunos").select("foto_caminho").eq("id", id).maybeSingle();
+    const { data: aluno, error: erroLeitura } = await supabase.from("alunos").select("foto_caminho").eq("id", id).maybeSingle();
+    if (erroLeitura) return falha(erroLeitura);
     const { error } = await supabase.from("alunos").delete().eq("id", id);
     if (error) return falha(error);
     if (aluno?.foto_caminho) await supabase.storage.from(BUCKET).remove([aluno.foto_caminho]);
